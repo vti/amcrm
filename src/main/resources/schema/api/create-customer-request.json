@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "$ref": "classpath:/schema/api/definitions.json#/definitions/customerId"
+        },
+        "name": {
+            "$ref": "classpath:/schema/api/definitions.json#/definitions/name"
+        },
+        "surname": {
+            "$ref": "classpath:/schema/api/definitions.json#/definitions/surname"
+        },
+        "photoBlob": {
+            "$ref": "classpath:/schema/api/definitions.json#/definitions/photoBlob"
+        }
+    },
+    "required": ["id", "name", "surname"]
+}

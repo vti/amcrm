@@ -1,0 +1,6 @@
+baseUrl: http://other.url
+port: 1234
+storage:
+  provider: database
+  options:
+    database: db.db

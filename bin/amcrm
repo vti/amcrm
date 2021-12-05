@@ -1,0 +1,17 @@
+#!/bin/bash
+
+BINDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+BASE=$( readlink -e "$BINDIR/../" )
+NAME="amcrm"
+EXE="$BASE/lib/$NAME-1.0-SNAPSHOT.jar"
+
+if [ ! -e "$EXE" ]; then
+    EXE="$BASE/target/$NAME-1.0-SNAPSHOT.jar"
+fi
+
+if [ ! -e "$EXE" ]; then
+    echo 'No executable present'
+    exit 255
+fi
+
+java -jar $EXE "$@"

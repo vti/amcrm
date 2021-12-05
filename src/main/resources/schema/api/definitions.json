@@ -1,0 +1,23 @@
+{
+  "definitions": {
+    "customerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "surname": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "photoBlob": {
+      "type": "string",
+      "format": "base64"
+    }
+  }
+}

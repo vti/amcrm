@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "properties": {
+    "baseUrl": {
+      "type": "string",
+      "format": "url"
+    },
+    "port": {
+      "type": "integer"
+    },
+    "storage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "enum": [
+                "memory"
+              ]
+            }
+          },
+          "required": [
+            "provider"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "provider": {
+              "enum": [
+                "database"
+              ]
+            },
+            "options": {
+              "type": "object",
+              "properties": {
+                "database": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "database"
+              ]
+            }
+          },
+          "required": [
+            "provider",
+            "options"
+          ]
+        }
+      ]
+    }
+  }
+}
