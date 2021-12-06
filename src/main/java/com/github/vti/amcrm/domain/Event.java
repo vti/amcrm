@@ -1,10 +1,12 @@
 package com.github.vti.amcrm.domain;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import com.github.vti.amcrm.domain.user.UserId;
 
 public class Event<T> {
+    private final Instant createdAt = Instant.now();
     private final T originId;
     private final UserId userId;
     private final Object payload;
@@ -17,6 +19,10 @@ public class Event<T> {
 
     protected Event(T originId, UserId userId) {
         this(originId, userId, null);
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
     public String getName() {

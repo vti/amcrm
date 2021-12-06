@@ -1,5 +1,6 @@
 package com.github.vti.amcrm.domain.user;
 
+import java.time.Instant;
 import java.util.Objects;
 
 import com.github.vti.amcrm.domain.Entity;
@@ -11,8 +12,11 @@ public class User extends Entity<Event<UserId>> {
     private Long version;
     private String name;
     private Boolean admin;
+    private Instant createdAt;
     private UserId createdBy;
+    private Instant updatedAt = null;
     private UserId updatedBy = null;
+    private Instant deletedAt = null;
     private UserId deletedBy = null;
 
     private User(Builder builder) {
@@ -20,8 +24,11 @@ public class User extends Entity<Event<UserId>> {
         this.version = Objects.requireNonNull(builder.version, "version");
         this.admin = Objects.requireNonNull(builder.admin, "isAdmin");
         this.name = Objects.requireNonNull(builder.name, "name");
+        this.createdAt = Objects.requireNonNull(builder.createdAt, "createdAt");
         this.createdBy = Objects.requireNonNull(builder.createdBy, "createdBy");
+        this.updatedAt = builder.updatedAt;
         this.updatedBy = builder.updatedBy;
+        this.deletedAt = builder.deletedAt;
         this.deletedBy = builder.deletedBy;
 
         if (this.version == 0L) {
@@ -45,12 +52,24 @@ public class User extends Entity<Event<UserId>> {
         return name;
     }
 
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
     public UserId getCreatedBy() {
         return createdBy;
     }
 
+    public Instant getUpdatedAt() {
+        return createdAt;
+    }
+
     public UserId getUpdatedBy() {
         return updatedBy;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
     }
 
     public UserId getDeletedBy() {
@@ -105,8 +124,11 @@ public class User extends Entity<Event<UserId>> {
         private Long version = 0L;
         private Boolean admin = false;
         private String name;
+        private Instant createdAt = Instant.now();
         private UserId createdBy;
+        private Instant updatedAt;
         private UserId updatedBy;
+        private Instant deletedAt;
         private UserId deletedBy;
 
         public Builder id(UserId id) {
@@ -129,13 +151,28 @@ public class User extends Entity<Event<UserId>> {
             return this;
         }
 
+        public Builder createdAt(Instant createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
         public Builder createdBy(UserId createdBy) {
             this.createdBy = createdBy;
             return this;
         }
 
+        public Builder updatedAt(Instant updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
         public Builder updatedBy(UserId updatedBy) {
             this.updatedBy = updatedBy;
+            return this;
+        }
+
+        public Builder deletedAt(Instant deletedAt) {
+            this.deletedAt = deletedAt;
             return this;
         }
 

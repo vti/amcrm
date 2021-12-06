@@ -1,5 +1,6 @@
 package com.github.vti.amcrm.domain.customer;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -14,18 +15,24 @@ public class Customer extends Entity<Event<CustomerId>> {
     private String name;
     private String surname;
     private String photoLocation;
+    private Instant createdAt;
     private UserId createdBy;
+    private Instant updatedAt = null;
     private UserId updatedBy = null;
+    private Instant deletedAt = null;
     private UserId deletedBy = null;
 
     private Customer(Builder builder) {
-        this.id = Objects.requireNonNull(builder.id);
-        this.version = Objects.requireNonNull(builder.version);
-        this.name = Objects.requireNonNull(builder.name);
-        this.surname = Objects.requireNonNull(builder.surname);
+        this.id = Objects.requireNonNull(builder.id, "id");
+        this.version = Objects.requireNonNull(builder.version, "version");
+        this.name = Objects.requireNonNull(builder.name, "name");
+        this.surname = Objects.requireNonNull(builder.surname, "surname");
         this.photoLocation = builder.photoLocation;
-        this.createdBy = Objects.requireNonNull(builder.createdBy);
+        this.createdAt = Objects.requireNonNull(builder.createdAt, "createdAt");
+        this.createdBy = Objects.requireNonNull(builder.createdBy, "createdBy");
+        this.updatedAt = builder.updatedAt;
         this.updatedBy = builder.updatedBy;
+        this.deletedAt = builder.deletedAt;
         this.deletedBy = builder.deletedBy;
 
         if (this.version == 0L) {
@@ -53,12 +60,24 @@ public class Customer extends Entity<Event<CustomerId>> {
         return Optional.ofNullable(photoLocation);
     }
 
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
     public UserId getCreatedBy() {
         return createdBy;
     }
 
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
     public UserId getUpdatedBy() {
         return updatedBy;
+    }
+
+    public Instant getDeletedAt() {
+        return deletedAt;
     }
 
     public UserId getDeletedBy() {
@@ -71,6 +90,7 @@ public class Customer extends Entity<Event<CustomerId>> {
 
     public void changeName(UserId userId, String newName) {
         this.name = newName;
+        this.updatedAt = Instant.now();
         this.updatedBy = userId;
 
         this.addEvent(new CustomerNameChanged(this.id, this.updatedBy));
@@ -78,6 +98,7 @@ public class Customer extends Entity<Event<CustomerId>> {
 
     public void changeSurname(UserId userId, String newSurname) {
         this.surname = newSurname;
+        this.updatedAt = Instant.now();
         this.updatedBy = userId;
 
         this.addEvent(new CustomerSurnameChanged(this.id, this.updatedBy));
@@ -85,6 +106,7 @@ public class Customer extends Entity<Event<CustomerId>> {
 
     public void changePhotoLocation(UserId userId, String photoLocation) {
         this.photoLocation = photoLocation;
+        this.updatedAt = Instant.now();
         this.updatedBy = userId;
 
         this.addEvent(new CustomerPhotoChanged(this.id, this.updatedBy));
@@ -95,6 +117,7 @@ public class Customer extends Entity<Event<CustomerId>> {
             throw new IllegalStateException();
         }
 
+        this.deletedAt = Instant.now();
         this.deletedBy = userId;
 
         this.addEvent(new CustomerDeleted(this.id, this.deletedBy));
@@ -127,8 +150,11 @@ public class Customer extends Entity<Event<CustomerId>> {
         private String name;
         private String surname;
         private String photoLocation;
+        private Instant createdAt = Instant.now();
         private UserId createdBy;
+        private Instant updatedAt;
         private UserId updatedBy;
+        private Instant deletedAt;
         private UserId deletedBy;
 
         public Builder id(CustomerId id) {
@@ -156,13 +182,28 @@ public class Customer extends Entity<Event<CustomerId>> {
             return this;
         }
 
+        public Builder createdAt(Instant createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
         public Builder createdBy(UserId createdBy) {
             this.createdBy = createdBy;
             return this;
         }
 
+        public Builder updatedAt(Instant updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
         public Builder updatedBy(UserId updatedBy) {
             this.updatedBy = updatedBy;
+            return this;
+        }
+
+        public Builder deletedAt(Instant deletedAt) {
+            this.deletedAt = deletedAt;
             return this;
         }
 

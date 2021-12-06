@@ -3,6 +3,7 @@
  */
 package com.github.vti.amcrm.db.tables;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,6 +45,10 @@ public class Event extends TableImpl<EventRecord> {
     public final TableField<EventRecord, Integer> ID =
             createField(
                     DSL.name("id"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
+    /** The column <code>event.created_at</code>. */
+    public final TableField<EventRecord, LocalDateTime> CREATED_AT =
+            createField(DSL.name("created_at"), SQLDataType.LOCALDATETIME(0), this, "");
 
     /** The column <code>event.name</code>. */
     public final TableField<EventRecord, String> NAME =
@@ -131,11 +136,11 @@ public class Event extends TableImpl<EventRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Integer, String, String, String, String> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Integer, LocalDateTime, String, String, String, String> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

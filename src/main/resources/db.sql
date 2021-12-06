@@ -7,18 +7,12 @@ CREATE TABLE customer (
     surname TEXT NOT NULL,
     photo_location TEXT,
 
+    created_at TIMESTAMP NOT NULL,
     created_by TEXT NOT NULL,
+    updated_at TIMESTAMP,
     updated_by TEXT,
+    deleted_at TIMESTAMP,
     deleted_by TEXT
-);
-
-DROP TABLE IF EXISTS event;
-CREATE TABLE event (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    origin_id TEXT NOT NULL,
-    user_id TEXT NOT NULL,
-    payload TEXT
 );
 
 DROP TABLE IF EXISTS user;
@@ -29,8 +23,20 @@ CREATE TABLE user (
     name TEXT NOT NULL,
     is_admin BOOLEAN NOT NULL,
 
+    created_at TIMESTAMP NOT NULL,
     created_by TEXT NOT NULL,
+    updated_at TIMESTAMP,
     updated_by TEXT,
+    deleted_at TIMESTAMP,
     deleted_by TEXT
 );
 
+DROP TABLE IF EXISTS event;
+CREATE TABLE event (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP,
+    name TEXT NOT NULL,
+    origin_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    payload TEXT
+);

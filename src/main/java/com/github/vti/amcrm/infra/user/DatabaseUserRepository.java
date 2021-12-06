@@ -2,9 +2,11 @@ package com.github.vti.amcrm.infra.user;
 
 import static com.github.vti.amcrm.db.Tables.EVENT;
 import static com.github.vti.amcrm.db.Tables.USER;
+import static com.github.vti.amcrm.infra.DatabaseUtils.toLocalDateTime;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,7 +14,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
-import org.jooq.Record7;
+import org.jooq.Record10;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
@@ -43,18 +45,32 @@ public class DatabaseUserRepository implements UserRepository {
         try (Connection connection = this.dataSource.getConnection()) {
             DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
 
-            Record7<String, Long, Boolean, String, String, String, String> record =
-                    create.select(
-                                    USER.ID,
-                                    USER.VERSION,
-                                    USER.IS_ADMIN,
-                                    USER.NAME,
-                                    USER.CREATED_BY,
-                                    USER.UPDATED_BY,
-                                    USER.DELETED_BY)
-                            .from(USER)
-                            .where(USER.ID.eq(id.value()))
-                            .fetchOne();
+            Record10<
+                            String,
+                            Long,
+                            Boolean,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String>
+                    record =
+                            create.select(
+                                            USER.ID,
+                                            USER.VERSION,
+                                            USER.IS_ADMIN,
+                                            USER.NAME,
+                                            USER.CREATED_AT,
+                                            USER.CREATED_BY,
+                                            USER.UPDATED_AT,
+                                            USER.UPDATED_BY,
+                                            USER.DELETED_AT,
+                                            USER.DELETED_BY)
+                                    .from(USER)
+                                    .where(USER.ID.eq(id.value()))
+                                    .fetchOne();
 
             if (record == null) {
                 return Optional.empty();
@@ -98,18 +114,24 @@ public class DatabaseUserRepository implements UserRepository {
                                     USER.VERSION,
                                     USER.IS_ADMIN,
                                     USER.NAME,
+                                    USER.CREATED_AT,
                                     USER.CREATED_BY,
+                                    USER.UPDATED_AT,
                                     USER.UPDATED_BY,
+                                    USER.DELETED_AT,
                                     USER.DELETED_BY)
                             .values(
                                     user.getId().value(),
                                     user.getVersion() + 1L,
                                     user.isAdmin(),
                                     user.getName(),
+                                    toLocalDateTime(user.getCreatedAt()),
                                     user.getCreatedBy().value(),
+                                    toLocalDateTime(user.getUpdatedAt()),
                                     Optional.ofNullable(user.getUpdatedBy())
                                             .map(v -> v.value())
                                             .orElse(null),
+                                    toLocalDateTime(user.getDeletedAt()),
                                     Optional.ofNullable(user.getDeletedBy())
                                             .map(v -> v.value())
                                             .orElse(null))
@@ -128,12 +150,15 @@ public class DatabaseUserRepository implements UserRepository {
                                 .set(USER.VERSION, user.getVersion() + 1L)
                                 .set(USER.IS_ADMIN, user.isAdmin())
                                 .set(USER.NAME, user.getName())
+                                .set(USER.CREATED_AT, toLocalDateTime(user.getCreatedAt()))
                                 .set(USER.CREATED_BY, user.getCreatedBy().value())
+                                .set(USER.UPDATED_AT, toLocalDateTime(user.getUpdatedAt()))
                                 .set(
                                         USER.UPDATED_BY,
                                         Optional.ofNullable(user.getUpdatedBy())
                                                 .map(v -> v.value())
                                                 .orElse(null))
+                                .set(USER.DELETED_AT, toLocalDateTime(user.getDeletedAt()))
                                 .set(
                                         USER.DELETED_BY,
                                         Optional.ofNullable(user.getDeletedBy())
@@ -163,8 +188,15 @@ public class DatabaseUserRepository implements UserRepository {
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
 
         for (Event<UserId> event : events) {
-            create.insertInto(EVENT, EVENT.NAME, EVENT.ORIGIN_ID, EVENT.USER_ID, EVENT.PAYLOAD)
+            create.insertInto(
+                            EVENT,
+                            EVENT.CREATED_AT,
+                            EVENT.NAME,
+                            EVENT.ORIGIN_ID,
+                            EVENT.USER_ID,
+                            EVENT.PAYLOAD)
                     .values(
+                            toLocalDateTime(event.getCreatedAt()),
                             event.getName(),
                             event.getOriginId().value(),
                             event.getUserId().value(),

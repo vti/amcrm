@@ -3,6 +3,7 @@
  */
 package com.github.vti.amcrm.db.tables;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -55,13 +56,26 @@ public class User extends TableImpl<UserRecord> {
     public final TableField<UserRecord, Boolean> IS_ADMIN =
             createField(DSL.name("is_admin"), SQLDataType.BOOLEAN.nullable(false), this, "");
 
+    /** The column <code>user.created_at</code>. */
+    public final TableField<UserRecord, LocalDateTime> CREATED_AT =
+            createField(
+                    DSL.name("created_at"), SQLDataType.LOCALDATETIME(0).nullable(false), this, "");
+
     /** The column <code>user.created_by</code>. */
     public final TableField<UserRecord, String> CREATED_BY =
             createField(DSL.name("created_by"), SQLDataType.CLOB.nullable(false), this, "");
 
+    /** The column <code>user.updated_at</code>. */
+    public final TableField<UserRecord, LocalDateTime> UPDATED_AT =
+            createField(DSL.name("updated_at"), SQLDataType.LOCALDATETIME(0), this, "");
+
     /** The column <code>user.updated_by</code>. */
     public final TableField<UserRecord, String> UPDATED_BY =
             createField(DSL.name("updated_by"), SQLDataType.CLOB, this, "");
+
+    /** The column <code>user.deleted_at</code>. */
+    public final TableField<UserRecord, LocalDateTime> DELETED_AT =
+            createField(DSL.name("deleted_at"), SQLDataType.LOCALDATETIME(0), this, "");
 
     /** The column <code>user.deleted_by</code>. */
     public final TableField<UserRecord, String> DELETED_BY =
@@ -132,11 +146,22 @@ public class User extends TableImpl<UserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<String, Long, String, Boolean, String, String, String> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row10<
+                    String,
+                    Long,
+                    String,
+                    Boolean,
+                    LocalDateTime,
+                    String,
+                    LocalDateTime,
+                    String,
+                    LocalDateTime,
+                    String>
+            fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }

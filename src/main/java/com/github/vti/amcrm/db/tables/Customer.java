@@ -3,6 +3,7 @@
  */
 package com.github.vti.amcrm.db.tables;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -59,13 +60,26 @@ public class Customer extends TableImpl<CustomerRecord> {
     public final TableField<CustomerRecord, String> PHOTO_LOCATION =
             createField(DSL.name("photo_location"), SQLDataType.CLOB, this, "");
 
+    /** The column <code>customer.created_at</code>. */
+    public final TableField<CustomerRecord, LocalDateTime> CREATED_AT =
+            createField(
+                    DSL.name("created_at"), SQLDataType.LOCALDATETIME(0).nullable(false), this, "");
+
     /** The column <code>customer.created_by</code>. */
     public final TableField<CustomerRecord, String> CREATED_BY =
             createField(DSL.name("created_by"), SQLDataType.CLOB.nullable(false), this, "");
 
+    /** The column <code>customer.updated_at</code>. */
+    public final TableField<CustomerRecord, LocalDateTime> UPDATED_AT =
+            createField(DSL.name("updated_at"), SQLDataType.LOCALDATETIME(0), this, "");
+
     /** The column <code>customer.updated_by</code>. */
     public final TableField<CustomerRecord, String> UPDATED_BY =
             createField(DSL.name("updated_by"), SQLDataType.CLOB, this, "");
+
+    /** The column <code>customer.deleted_at</code>. */
+    public final TableField<CustomerRecord, LocalDateTime> DELETED_AT =
+            createField(DSL.name("deleted_at"), SQLDataType.LOCALDATETIME(0), this, "");
 
     /** The column <code>customer.deleted_by</code>. */
     public final TableField<CustomerRecord, String> DELETED_BY =
@@ -136,11 +150,23 @@ public class Customer extends TableImpl<CustomerRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<String, Long, String, String, String, String, String, String> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row11<
+                    String,
+                    Long,
+                    String,
+                    String,
+                    String,
+                    LocalDateTime,
+                    String,
+                    LocalDateTime,
+                    String,
+                    LocalDateTime,
+                    String>
+            fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }

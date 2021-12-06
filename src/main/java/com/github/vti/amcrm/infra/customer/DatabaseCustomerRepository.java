@@ -2,9 +2,11 @@ package com.github.vti.amcrm.infra.customer;
 
 import static com.github.vti.amcrm.db.Tables.CUSTOMER;
 import static com.github.vti.amcrm.db.Tables.EVENT;
+import static com.github.vti.amcrm.infra.DatabaseUtils.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,19 +44,34 @@ public class DatabaseCustomerRepository implements CustomerRepository {
         try (Connection connection = this.dataSource.getConnection()) {
             DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
 
-            Record8<String, Long, String, String, String, String, String, String> record =
-                    create.select(
-                                    CUSTOMER.ID,
-                                    CUSTOMER.VERSION,
-                                    CUSTOMER.NAME,
-                                    CUSTOMER.SURNAME,
-                                    CUSTOMER.PHOTO_LOCATION,
-                                    CUSTOMER.CREATED_BY,
-                                    CUSTOMER.UPDATED_BY,
-                                    CUSTOMER.DELETED_BY)
-                            .from(CUSTOMER)
-                            .where(CUSTOMER.ID.eq(id.value()))
-                            .fetchOne();
+            Record11<
+                            String,
+                            Long,
+                            String,
+                            String,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String>
+                    record =
+                            create.select(
+                                            CUSTOMER.ID,
+                                            CUSTOMER.VERSION,
+                                            CUSTOMER.NAME,
+                                            CUSTOMER.SURNAME,
+                                            CUSTOMER.PHOTO_LOCATION,
+                                            CUSTOMER.CREATED_AT,
+                                            CUSTOMER.CREATED_BY,
+                                            CUSTOMER.UPDATED_AT,
+                                            CUSTOMER.UPDATED_BY,
+                                            CUSTOMER.DELETED_AT,
+                                            CUSTOMER.DELETED_BY)
+                                    .from(CUSTOMER)
+                                    .where(CUSTOMER.ID.eq(id.value()))
+                                    .fetchOne();
 
             if (record == null) {
                 return Optional.empty();
@@ -66,11 +83,14 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                 .name(record.getValue(CUSTOMER.NAME))
                                 .surname(record.getValue(CUSTOMER.SURNAME))
                                 .photoLocation(record.getValue(CUSTOMER.PHOTO_LOCATION))
+                                .createdAt(toInstant(record.getValue(CUSTOMER.CREATED_AT)))
                                 .createdBy(UserId.of(record.getValue(CUSTOMER.CREATED_BY)))
+                                .updatedAt(toInstant(record.getValue(CUSTOMER.UPDATED_AT)))
                                 .updatedBy(
                                         record.getValue(CUSTOMER.UPDATED_BY) == null
                                                 ? null
                                                 : UserId.of(record.getValue(CUSTOMER.UPDATED_BY)))
+                                .deletedAt(toInstant(record.getValue(CUSTOMER.DELETED_AT)))
                                 .deletedBy(
                                         record.getValue(CUSTOMER.DELETED_BY) == null
                                                 ? null
@@ -100,8 +120,11 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                     CUSTOMER.NAME,
                                     CUSTOMER.SURNAME,
                                     CUSTOMER.PHOTO_LOCATION,
+                                    CUSTOMER.CREATED_AT,
                                     CUSTOMER.CREATED_BY,
+                                    CUSTOMER.UPDATED_AT,
                                     CUSTOMER.UPDATED_BY,
+                                    CUSTOMER.DELETED_AT,
                                     CUSTOMER.DELETED_BY)
                             .values(
                                     customer.getId().value(),
@@ -109,10 +132,13 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                     customer.getName(),
                                     customer.getSurname(),
                                     customer.getPhotoLocation().orElse(null),
+                                    toLocalDateTime(customer.getCreatedAt()),
                                     customer.getCreatedBy().value(),
+                                    toLocalDateTime(customer.getUpdatedAt()),
                                     Optional.ofNullable(customer.getUpdatedBy())
                                             .map(v -> v.value())
                                             .orElse(null),
+                                    toLocalDateTime(customer.getDeletedAt()),
                                     Optional.ofNullable(customer.getDeletedBy())
                                             .map(v -> v.value())
                                             .orElse(null))
@@ -134,12 +160,15 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                 .set(
                                         CUSTOMER.PHOTO_LOCATION,
                                         customer.getPhotoLocation().orElse(null))
+                                .set(CUSTOMER.CREATED_AT, toLocalDateTime(customer.getCreatedAt()))
                                 .set(CUSTOMER.CREATED_BY, customer.getCreatedBy().value())
+                                .set(CUSTOMER.UPDATED_AT, toLocalDateTime(customer.getCreatedAt()))
                                 .set(
                                         CUSTOMER.UPDATED_BY,
                                         Optional.ofNullable(customer.getUpdatedBy())
                                                 .map(v -> v.value())
                                                 .orElse(null))
+                                .set(CUSTOMER.DELETED_AT, toLocalDateTime(customer.getCreatedAt()))
                                 .set(
                                         CUSTOMER.DELETED_BY,
                                         Optional.ofNullable(customer.getDeletedBy())
@@ -165,12 +194,19 @@ public class DatabaseCustomerRepository implements CustomerRepository {
         }
     }
 
-    private void storeEvents(Connection connection, List<Event<CustomerId>> events) {
+    public static void storeEvents(Connection connection, List<Event<CustomerId>> events) {
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
 
         for (Event<CustomerId> event : events) {
-            create.insertInto(EVENT, EVENT.NAME, EVENT.ORIGIN_ID, EVENT.USER_ID, EVENT.PAYLOAD)
+            create.insertInto(
+                            EVENT,
+                            EVENT.CREATED_AT,
+                            EVENT.NAME,
+                            EVENT.ORIGIN_ID,
+                            EVENT.USER_ID,
+                            EVENT.PAYLOAD)
                     .values(
+                            toLocalDateTime(event.getCreatedAt()),
                             event.getName(),
                             event.getOriginId().value(),
                             event.getUserId().value(),
