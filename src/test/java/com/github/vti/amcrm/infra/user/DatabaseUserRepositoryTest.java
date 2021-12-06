@@ -13,6 +13,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
@@ -77,19 +78,19 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void storesUpdatedUser() throws Exception {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         User user = TestFactory.newUser();
 
         userRepository.store(user);
 
-        user.toggleAdminStatus(userId);
+        user.toggleAdminStatus(actorId);
 
         userRepository.store(user);
 
         Optional<User> userOptional = userRepository.load(user.getId());
 
         assertTrue(userOptional.get().isAdmin());
-        assertTrue(userOptional.get().getUpdatedBy().equals(userId));
+        assertTrue(userOptional.get().getUpdatedBy().equals(actorId));
     }
 
     @Test
@@ -136,16 +137,16 @@ class DatabaseUserRepositoryTest {
 
     @Test
     void softDeletes() throws Exception {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         User user = TestFactory.newUser();
 
-        user.delete(userId);
+        user.delete(actorId);
 
         userRepository.store(user);
 
         User loadedUser = userRepository.load(user.getId()).get();
 
         assertTrue(loadedUser.isDeleted());
-        assertEquals(userId, loadedUser.getDeletedBy());
+        assertEquals(actorId, loadedUser.getDeletedBy());
     }
 }

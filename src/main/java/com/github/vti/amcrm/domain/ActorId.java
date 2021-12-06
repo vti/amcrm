@@ -1,18 +1,18 @@
-package com.github.vti.amcrm.domain.user;
+package com.github.vti.amcrm.domain;
 
 import java.util.Objects;
 
-public class UserId {
+public class ActorId {
     private final String id;
 
-    private UserId(String id) {
+    private ActorId(String id) {
         this.id = id;
     }
 
-    public static UserId of(String id) {
+    public static ActorId of(String id) {
         Objects.requireNonNull(id);
 
-        return new UserId(id);
+        return new ActorId(id);
     }
 
     public String value() {
@@ -21,14 +21,14 @@ public class UserId {
 
     @Override
     public String toString() {
-        return "UserId{" + "id=" + id + '}';
+        return "ActorId{" + "id=" + id + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserId that = (UserId) o;
+        ActorId that = (ActorId) o;
         return id.equals(that.id);
     }
 

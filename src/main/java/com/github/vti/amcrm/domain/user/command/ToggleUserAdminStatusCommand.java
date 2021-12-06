@@ -2,6 +2,7 @@ package com.github.vti.amcrm.domain.user.command;
 
 import java.util.Objects;
 
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
@@ -10,19 +11,19 @@ import com.github.vti.amcrm.domain.user.exception.UserNotFoundException;
 
 public class ToggleUserAdminStatusCommand {
     private UserRepository userRepository;
-    private UserId userId;
+    private ActorId actorId;
     private UserId id;
 
     private ToggleUserAdminStatusCommand(Builder builder) {
         this.userRepository = Objects.requireNonNull(builder.userRepository);
-        this.userId = Objects.requireNonNull(builder.userId);
+        this.actorId = Objects.requireNonNull(builder.actorId);
         this.id = Objects.requireNonNull(builder.id);
     }
 
     public void execute() throws UserNotFoundException {
         User user = this.userRepository.load(this.id).orElseThrow(UserNotFoundException::new);
 
-        user.toggleAdminStatus(userId);
+        user.toggleAdminStatus(actorId);
 
         try {
             this.userRepository.store(user);
@@ -37,7 +38,7 @@ public class ToggleUserAdminStatusCommand {
 
     public static class Builder {
         private UserRepository userRepository;
-        private UserId userId;
+        private ActorId actorId;
         private UserId id;
 
         public Builder userRepository(UserRepository userRepository) {
@@ -45,8 +46,8 @@ public class ToggleUserAdminStatusCommand {
             return this;
         }
 
-        public Builder userId(UserId userId) {
-            this.userId = userId;
+        public Builder actorId(ActorId actorId) {
+            this.actorId = actorId;
             return this;
         }
 

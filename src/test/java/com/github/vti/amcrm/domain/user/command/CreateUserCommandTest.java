@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.vti.amcrm.TestData;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
@@ -37,12 +38,12 @@ class CreateUserCommandTest {
 
     public UserId createUser() throws UserExistsException {
         UserId userId = UserId.of(TestData.getRandomId());
-        UserId actorId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
 
         CreateUserCommand command =
                 CreateUserCommand.builder()
                         .userRepository(userRepository)
-                        .userId(actorId)
+                        .actorId(actorId)
                         .id(userId)
                         .name(TestData.getRandomName())
                         .build();

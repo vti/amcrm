@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.customer.event.*;
-import com.github.vti.amcrm.domain.user.UserId;
 
 class CustomerTest {
 
@@ -19,44 +19,44 @@ class CustomerTest {
 
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
-        assertEquals(customer.getCreatedBy(), customer.getEvents().get(0).getUserId());
+        assertEquals(customer.getCreatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(CustomerCreated.class.getSimpleName(), customer.getEvents().get(0).getName());
     }
 
     @Test
     void changesName() {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomerBuilder().name("John").build();
 
         customer.clearEvents();
 
-        customer.changeName(userId, "Johnny");
+        customer.changeName(actorId, "Johnny");
 
         assertEquals("Johnny", customer.getName());
-        assertEquals(userId, customer.getUpdatedBy());
+        assertEquals(actorId, customer.getUpdatedBy());
 
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
-        assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getUserId());
+        assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(
                 CustomerNameChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
     }
 
     @Test
     void changesSurname() {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomerBuilder().surname("Doe").build();
 
         customer.clearEvents();
 
-        customer.changeSurname(userId, "Silver");
+        customer.changeSurname(actorId, "Silver");
 
         assertEquals("Silver", customer.getSurname());
-        assertEquals(userId, customer.getUpdatedBy());
+        assertEquals(actorId, customer.getUpdatedBy());
 
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
-        assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getUserId());
+        assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(
                 CustomerSurnameChanged.class.getSimpleName(),
                 customer.getEvents().get(0).getName());
@@ -64,49 +64,49 @@ class CustomerTest {
 
     @Test
     void changesPhotoLocation() {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomerBuilder().surname("Doe").build();
 
         customer.clearEvents();
 
-        customer.changePhotoLocation(userId, "http://some.url/photo.jpg");
+        customer.changePhotoLocation(actorId, "http://some.url/photo.jpg");
 
         assertEquals("http://some.url/photo.jpg", customer.getPhotoLocation().get());
-        assertEquals(userId, customer.getUpdatedBy());
+        assertEquals(actorId, customer.getUpdatedBy());
 
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
-        assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getUserId());
+        assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(
                 CustomerPhotoChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
     }
 
     @Test
     void delete() {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomer();
 
         customer.clearEvents();
 
-        customer.delete(userId);
+        customer.delete(actorId);
 
         assertEquals(true, customer.isDeleted());
-        assertEquals(userId, customer.getDeletedBy());
+        assertEquals(actorId, customer.getDeletedBy());
 
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
-        assertEquals(customer.getDeletedBy(), customer.getEvents().get(0).getUserId());
+        assertEquals(customer.getDeletedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(CustomerDeleted.class.getSimpleName(), customer.getEvents().get(0).getName());
     }
 
     @Test
     void throwsWhenDeletingAlreadyDeleted() {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomer();
 
-        customer.delete(userId);
+        customer.delete(actorId);
 
-        assertThrows(IllegalStateException.class, () -> customer.delete(userId));
+        assertThrows(IllegalStateException.class, () -> customer.delete(actorId));
     }
 
     @Test

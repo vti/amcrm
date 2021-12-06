@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.vti.amcrm.TestData;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
@@ -28,14 +29,14 @@ class ToggleUserAdminStatusCommandTest {
     @Test
     public void togglesAdminStatus() throws UserExistsException, UserNotFoundException {
         UserId userId = createUser();
-        UserId actorId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
 
         assertFalse(userRepository.load(userId).get().isAdmin());
 
         ToggleUserAdminStatusCommand command =
                 ToggleUserAdminStatusCommand.builder()
                         .userRepository(userRepository)
-                        .userId(actorId)
+                        .actorId(actorId)
                         .id(userId)
                         .build();
 
@@ -48,12 +49,12 @@ class ToggleUserAdminStatusCommandTest {
 
     @Test
     public void throwsOnUnknownUser() throws UserExistsException, UserNotFoundException {
-        UserId actorId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
 
         ToggleUserAdminStatusCommand command =
                 ToggleUserAdminStatusCommand.builder()
                         .userRepository(userRepository)
-                        .userId(actorId)
+                        .actorId(actorId)
                         .id(UserId.of(TestData.getRandomId()))
                         .build();
 
@@ -62,12 +63,12 @@ class ToggleUserAdminStatusCommandTest {
 
     public UserId createUser() throws UserExistsException {
         UserId userId = UserId.of(TestData.getRandomId());
-        UserId actorId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
 
         CreateUserCommand command =
                 CreateUserCommand.builder()
                         .userRepository(userRepository)
-                        .userId(actorId)
+                        .actorId(actorId)
                         .id(userId)
                         .name(TestData.getRandomName())
                         .build();

@@ -25,7 +25,6 @@ import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
-import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 
 public class DatabaseCustomerRepository implements CustomerRepository {
@@ -84,17 +83,11 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                 .surname(record.getValue(CUSTOMER.SURNAME))
                                 .photoLocation(record.getValue(CUSTOMER.PHOTO_LOCATION))
                                 .createdAt(toInstant(record.getValue(CUSTOMER.CREATED_AT)))
-                                .createdBy(UserId.of(record.getValue(CUSTOMER.CREATED_BY)))
+                                .createdBy(toActorId(record.getValue(CUSTOMER.CREATED_BY)))
                                 .updatedAt(toInstant(record.getValue(CUSTOMER.UPDATED_AT)))
-                                .updatedBy(
-                                        record.getValue(CUSTOMER.UPDATED_BY) == null
-                                                ? null
-                                                : UserId.of(record.getValue(CUSTOMER.UPDATED_BY)))
+                                .updatedBy(toActorId(record.getValue(CUSTOMER.UPDATED_BY)))
                                 .deletedAt(toInstant(record.getValue(CUSTOMER.DELETED_AT)))
-                                .deletedBy(
-                                        record.getValue(CUSTOMER.DELETED_BY) == null
-                                                ? null
-                                                : UserId.of(record.getValue(CUSTOMER.DELETED_BY)))
+                                .deletedBy(toActorId(record.getValue(CUSTOMER.DELETED_BY)))
                                 .build();
 
                 return Optional.of(customer);
@@ -209,7 +202,7 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                             toLocalDateTime(event.getCreatedAt()),
                             event.getName(),
                             event.getOriginId().value(),
-                            event.getUserId().value(),
+                            event.getActorId().value(),
                             event.getPayload()
                                     .map(
                                             p -> {

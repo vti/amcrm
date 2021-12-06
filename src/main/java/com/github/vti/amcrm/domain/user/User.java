@@ -3,6 +3,7 @@ package com.github.vti.amcrm.domain.user;
 import java.time.Instant;
 import java.util.Objects;
 
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.Entity;
 import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.user.event.*;
@@ -13,11 +14,11 @@ public class User extends Entity<Event<UserId>> {
     private String name;
     private Boolean admin;
     private Instant createdAt;
-    private UserId createdBy;
+    private ActorId createdBy;
     private Instant updatedAt = null;
-    private UserId updatedBy = null;
+    private ActorId updatedBy = null;
     private Instant deletedAt = null;
-    private UserId deletedBy = null;
+    private ActorId deletedBy = null;
 
     private User(Builder builder) {
         this.id = Objects.requireNonNull(builder.id, "id");
@@ -56,7 +57,7 @@ public class User extends Entity<Event<UserId>> {
         return createdAt;
     }
 
-    public UserId getCreatedBy() {
+    public ActorId getCreatedBy() {
         return createdBy;
     }
 
@@ -64,7 +65,7 @@ public class User extends Entity<Event<UserId>> {
         return createdAt;
     }
 
-    public UserId getUpdatedBy() {
+    public ActorId getUpdatedBy() {
         return updatedBy;
     }
 
@@ -72,14 +73,15 @@ public class User extends Entity<Event<UserId>> {
         return deletedAt;
     }
 
-    public UserId getDeletedBy() {
+    public ActorId getDeletedBy() {
         return deletedBy;
     }
 
-    public void toggleAdminStatus(UserId userId) {
+    public void toggleAdminStatus(ActorId actorId) {
         this.admin = !this.admin;
 
-        this.updatedBy = userId;
+        this.updatedAt = Instant.now();
+        this.updatedBy = actorId;
 
         this.addEvent(new UserAdminStatusToggled(this.id, this.updatedBy));
     }
@@ -88,12 +90,12 @@ public class User extends Entity<Event<UserId>> {
         this.version++;
     }
 
-    public void delete(UserId userId) {
+    public void delete(ActorId actorId) {
         if (this.isDeleted()) {
             throw new IllegalStateException();
         }
 
-        this.deletedBy = userId;
+        this.deletedBy = actorId;
 
         this.addEvent(new UserDeleted(this.id, this.deletedBy));
     }
@@ -125,11 +127,11 @@ public class User extends Entity<Event<UserId>> {
         private Boolean admin = false;
         private String name;
         private Instant createdAt = Instant.now();
-        private UserId createdBy;
+        private ActorId createdBy;
         private Instant updatedAt;
-        private UserId updatedBy;
+        private ActorId updatedBy;
         private Instant deletedAt;
-        private UserId deletedBy;
+        private ActorId deletedBy;
 
         public Builder id(UserId id) {
             this.id = id;
@@ -141,8 +143,8 @@ public class User extends Entity<Event<UserId>> {
             return this;
         }
 
-        public Builder isAdmin(Boolean isAdmin) {
-            this.admin = isAdmin;
+        public Builder admin(Boolean admin) {
+            this.admin = admin;
             return this;
         }
 
@@ -156,7 +158,7 @@ public class User extends Entity<Event<UserId>> {
             return this;
         }
 
-        public Builder createdBy(UserId createdBy) {
+        public Builder createdBy(ActorId createdBy) {
             this.createdBy = createdBy;
             return this;
         }
@@ -166,7 +168,7 @@ public class User extends Entity<Event<UserId>> {
             return this;
         }
 
-        public Builder updatedBy(UserId updatedBy) {
+        public Builder updatedBy(ActorId updatedBy) {
             this.updatedBy = updatedBy;
             return this;
         }
@@ -176,7 +178,7 @@ public class User extends Entity<Event<UserId>> {
             return this;
         }
 
-        public Builder deletedBy(UserId deletedBy) {
+        public Builder deletedBy(ActorId deletedBy) {
             this.deletedBy = deletedBy;
             return this;
         }

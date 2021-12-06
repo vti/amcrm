@@ -2,6 +2,7 @@ package com.github.vti.amcrm.domain.user.command;
 
 import java.util.Objects;
 
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
@@ -9,16 +10,16 @@ import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 
 public class CreateUserCommand {
     private UserRepository userRepository;
-    private UserId userId;
+    private ActorId actorId;
     private UserId id;
-    private Boolean isAdmin;
+    private Boolean admin;
     private String name;
 
     private CreateUserCommand(Builder builder) {
         this.userRepository = Objects.requireNonNull(builder.userRepository, "userRepository");
-        this.userId = Objects.requireNonNull(builder.userId, "userId");
+        this.actorId = Objects.requireNonNull(builder.actorId, "actorId");
         this.id = Objects.requireNonNull(builder.id, "id");
-        this.isAdmin = Objects.requireNonNull(builder.isAdmin, "id");
+        this.admin = Objects.requireNonNull(builder.admin, "id");
         this.name = Objects.requireNonNull(builder.name, "name");
     }
 
@@ -27,8 +28,8 @@ public class CreateUserCommand {
                 User.builder()
                         .id(this.id)
                         .name(this.name)
-                        .isAdmin(this.isAdmin)
-                        .createdBy(this.userId)
+                        .admin(this.admin)
+                        .createdBy(this.actorId)
                         .build();
 
         this.userRepository.store(user);
@@ -40,8 +41,8 @@ public class CreateUserCommand {
 
     public static class Builder {
         private UserRepository userRepository;
-        private UserId userId;
-        private Boolean isAdmin = false;
+        private ActorId actorId;
+        private Boolean admin = false;
         private UserId id;
         private String name;
 
@@ -50,8 +51,8 @@ public class CreateUserCommand {
             return this;
         }
 
-        public Builder userId(UserId userId) {
-            this.userId = userId;
+        public Builder actorId(ActorId actorId) {
+            this.actorId = actorId;
             return this;
         }
 
@@ -61,7 +62,7 @@ public class CreateUserCommand {
         }
 
         public Builder isAdmin(Boolean isAdmin) {
-            this.isAdmin = isAdmin;
+            this.admin = isAdmin;
             return this;
         }
 

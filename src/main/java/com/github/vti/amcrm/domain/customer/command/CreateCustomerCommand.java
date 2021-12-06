@@ -2,15 +2,15 @@ package com.github.vti.amcrm.domain.customer.command;
 
 import java.util.Objects;
 
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
-import com.github.vti.amcrm.domain.user.UserId;
 
 public class CreateCustomerCommand {
     private CustomerRepository customerRepository;
-    private UserId userId;
+    private ActorId actorId;
     private CustomerId id;
     private String name;
     private String surname;
@@ -19,7 +19,7 @@ public class CreateCustomerCommand {
     private CreateCustomerCommand(Builder builder) {
         this.customerRepository =
                 Objects.requireNonNull(builder.customerRepository, "customerRepository");
-        this.userId = Objects.requireNonNull(builder.userId, "userId");
+        this.actorId = Objects.requireNonNull(builder.actorId, "actorId");
         this.id = Objects.requireNonNull(builder.id, "id");
         this.name = Objects.requireNonNull(builder.name, "name");
         this.surname = Objects.requireNonNull(builder.surname, "surname");
@@ -33,7 +33,7 @@ public class CreateCustomerCommand {
                         .name(this.name)
                         .surname(this.surname)
                         .photoLocation(this.photoLocation)
-                        .createdBy(this.userId)
+                        .createdBy(this.actorId)
                         .build();
 
         this.customerRepository.store(customer);
@@ -45,7 +45,7 @@ public class CreateCustomerCommand {
 
     public static class Builder {
         private CustomerRepository customerRepository;
-        private UserId userId;
+        private ActorId actorId;
         private CustomerId id;
         private String name;
         private String surname;
@@ -56,8 +56,8 @@ public class CreateCustomerCommand {
             return this;
         }
 
-        public Builder userId(UserId userId) {
-            this.userId = userId;
+        public Builder actorId(ActorId actorId) {
+            this.actorId = actorId;
             return this;
         }
 

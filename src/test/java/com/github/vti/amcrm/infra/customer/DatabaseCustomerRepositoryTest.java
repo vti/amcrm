@@ -13,11 +13,11 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
-import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 import com.github.vti.amcrm.infra.TestDatabase;
 
@@ -79,19 +79,19 @@ class DatabaseCustomerRepositoryTest {
 
     @Test
     void storesUpdatedCustomer() throws Exception {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomer();
 
         customerRepository.store(customer);
 
-        customer.changeName(userId, "Johnny");
+        customer.changeName(actorId, "Johnny");
 
         customerRepository.store(customer);
 
         Optional<Customer> customerOptional = customerRepository.load(customer.getId());
 
         assertEquals("Johnny", customerOptional.get().getName());
-        assertTrue(customerOptional.get().getUpdatedBy().equals(userId));
+        assertTrue(customerOptional.get().getUpdatedBy().equals(actorId));
     }
 
     @Test
@@ -138,16 +138,16 @@ class DatabaseCustomerRepositoryTest {
 
     @Test
     void softDeletes() throws Exception {
-        UserId userId = UserId.of(TestData.getRandomId());
+        ActorId actorId = ActorId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomer();
 
-        customer.delete(userId);
+        customer.delete(actorId);
 
         customerRepository.store(customer);
 
         Customer loadedCustomer = customerRepository.load(customer.getId()).get();
 
         assertTrue(loadedCustomer.isDeleted());
-        assertEquals(userId, loadedCustomer.getDeletedBy());
+        assertEquals(actorId, loadedCustomer.getDeletedBy());
     }
 }

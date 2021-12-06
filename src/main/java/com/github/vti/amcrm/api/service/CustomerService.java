@@ -16,6 +16,7 @@ import com.github.vti.amcrm.api.exception.NotFoundException;
 import com.github.vti.amcrm.api.exception.ServiceExceptionHandler;
 import com.github.vti.amcrm.api.service.request.CreateCustomerRequest;
 import com.github.vti.amcrm.api.service.request.PatchCustomerRequest;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.RepositoryRegistry;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.domain.customer.command.CreateCustomerCommand;
@@ -23,7 +24,6 @@ import com.github.vti.amcrm.domain.customer.command.DeleteCustomerCommand;
 import com.github.vti.amcrm.domain.customer.command.PatchCustomerCommand;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.domain.customer.exception.CustomerNotFoundException;
-import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.infra.customer.dto.CustomerSummary;
 import com.github.vti.amcrm.infra.photo.Photo;
 import com.github.vti.amcrm.infra.photo.PhotoStorage;
@@ -68,7 +68,7 @@ public class CustomerService extends BaseService {
         CreateCustomerCommand createCustomerCommand =
                 CreateCustomerCommand.builder()
                         .customerRepository(this.repositoryRegistry.getCustomerRepository())
-                        .userId(UserId.of(client.getId()))
+                        .actorId(ActorId.of(client.getId()))
                         .id(CustomerId.of(request.getId()))
                         .name(request.getName())
                         .surname(request.getSurname())
@@ -93,7 +93,7 @@ public class CustomerService extends BaseService {
         PatchCustomerCommand patchCustomerCommand =
                 PatchCustomerCommand.builder()
                         .customerRepository(this.repositoryRegistry.getCustomerRepository())
-                        .userId(UserId.of(client.getId()))
+                        .actorId(ActorId.of(client.getId()))
                         .id(CustomerId.of(id))
                         .name(request.getName())
                         .surname(request.getSurname())
@@ -117,7 +117,7 @@ public class CustomerService extends BaseService {
         DeleteCustomerCommand deleteCustomerCommand =
                 DeleteCustomerCommand.builder()
                         .customerRepository(this.repositoryRegistry.getCustomerRepository())
-                        .userId(UserId.of(client.getId()))
+                        .actorId(ActorId.of(client.getId()))
                         .id(CustomerId.of(id))
                         .build();
 

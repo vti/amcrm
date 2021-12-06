@@ -12,10 +12,10 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
-import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.infra.TestDatabase;
 import com.github.vti.amcrm.infra.customer.dto.CustomerSummary;
 
@@ -55,7 +55,7 @@ class DatabaseCustomerViewTest {
     void doesNotReturnDeleted() throws Exception {
         Customer customer = createCustomer();
 
-        customer.delete(UserId.of(TestData.getRandomId()));
+        customer.delete(ActorId.of(TestData.getRandomId()));
 
         customerRepository.store(customer);
 

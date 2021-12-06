@@ -3,22 +3,20 @@ package com.github.vti.amcrm.domain;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.github.vti.amcrm.domain.user.UserId;
-
 public class Event<T> {
     private final Instant createdAt = Instant.now();
     private final T originId;
-    private final UserId userId;
+    private final ActorId actorId;
     private final Object payload;
 
-    protected Event(T originId, UserId userId, Object payload) {
+    protected Event(T originId, ActorId actorId, Object payload) {
         this.originId = originId;
-        this.userId = userId;
+        this.actorId = actorId;
         this.payload = payload;
     }
 
-    protected Event(T originId, UserId userId) {
-        this(originId, userId, null);
+    protected Event(T originId, ActorId actorId) {
+        this(originId, actorId, null);
     }
 
     public Instant getCreatedAt() {
@@ -33,8 +31,8 @@ public class Event<T> {
         return originId;
     }
 
-    public UserId getUserId() {
-        return userId;
+    public ActorId getActorId() {
+        return actorId;
     }
 
     public Optional<Object> getPayload() {

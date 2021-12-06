@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.Entity;
 import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.customer.event.*;
-import com.github.vti.amcrm.domain.user.UserId;
 
 public class Customer extends Entity<Event<CustomerId>> {
     private CustomerId id;
@@ -16,11 +16,11 @@ public class Customer extends Entity<Event<CustomerId>> {
     private String surname;
     private String photoLocation;
     private Instant createdAt;
-    private UserId createdBy;
+    private ActorId createdBy;
     private Instant updatedAt = null;
-    private UserId updatedBy = null;
+    private ActorId updatedBy = null;
     private Instant deletedAt = null;
-    private UserId deletedBy = null;
+    private ActorId deletedBy = null;
 
     private Customer(Builder builder) {
         this.id = Objects.requireNonNull(builder.id, "id");
@@ -64,7 +64,7 @@ public class Customer extends Entity<Event<CustomerId>> {
         return createdAt;
     }
 
-    public UserId getCreatedBy() {
+    public ActorId getCreatedBy() {
         return createdBy;
     }
 
@@ -72,7 +72,7 @@ public class Customer extends Entity<Event<CustomerId>> {
         return updatedAt;
     }
 
-    public UserId getUpdatedBy() {
+    public ActorId getUpdatedBy() {
         return updatedBy;
     }
 
@@ -80,7 +80,7 @@ public class Customer extends Entity<Event<CustomerId>> {
         return deletedAt;
     }
 
-    public UserId getDeletedBy() {
+    public ActorId getDeletedBy() {
         return deletedBy;
     }
 
@@ -88,37 +88,37 @@ public class Customer extends Entity<Event<CustomerId>> {
         this.version++;
     }
 
-    public void changeName(UserId userId, String newName) {
+    public void changeName(ActorId actorId, String newName) {
         this.name = newName;
         this.updatedAt = Instant.now();
-        this.updatedBy = userId;
+        this.updatedBy = actorId;
 
         this.addEvent(new CustomerNameChanged(this.id, this.updatedBy));
     }
 
-    public void changeSurname(UserId userId, String newSurname) {
+    public void changeSurname(ActorId actorId, String newSurname) {
         this.surname = newSurname;
         this.updatedAt = Instant.now();
-        this.updatedBy = userId;
+        this.updatedBy = actorId;
 
         this.addEvent(new CustomerSurnameChanged(this.id, this.updatedBy));
     }
 
-    public void changePhotoLocation(UserId userId, String photoLocation) {
+    public void changePhotoLocation(ActorId actorId, String photoLocation) {
         this.photoLocation = photoLocation;
         this.updatedAt = Instant.now();
-        this.updatedBy = userId;
+        this.updatedBy = actorId;
 
         this.addEvent(new CustomerPhotoChanged(this.id, this.updatedBy));
     }
 
-    public void delete(UserId userId) {
+    public void delete(ActorId actorId) {
         if (this.isDeleted()) {
             throw new IllegalStateException();
         }
 
         this.deletedAt = Instant.now();
-        this.deletedBy = userId;
+        this.deletedBy = actorId;
 
         this.addEvent(new CustomerDeleted(this.id, this.deletedBy));
     }
@@ -151,11 +151,11 @@ public class Customer extends Entity<Event<CustomerId>> {
         private String surname;
         private String photoLocation;
         private Instant createdAt = Instant.now();
-        private UserId createdBy;
+        private ActorId createdBy;
         private Instant updatedAt;
-        private UserId updatedBy;
+        private ActorId updatedBy;
         private Instant deletedAt;
-        private UserId deletedBy;
+        private ActorId deletedBy;
 
         public Builder id(CustomerId id) {
             this.id = id;
@@ -187,7 +187,7 @@ public class Customer extends Entity<Event<CustomerId>> {
             return this;
         }
 
-        public Builder createdBy(UserId createdBy) {
+        public Builder createdBy(ActorId createdBy) {
             this.createdBy = createdBy;
             return this;
         }
@@ -197,7 +197,7 @@ public class Customer extends Entity<Event<CustomerId>> {
             return this;
         }
 
-        public Builder updatedBy(UserId updatedBy) {
+        public Builder updatedBy(ActorId updatedBy) {
             this.updatedBy = updatedBy;
             return this;
         }
@@ -207,7 +207,7 @@ public class Customer extends Entity<Event<CustomerId>> {
             return this;
         }
 
-        public Builder deletedBy(UserId deletedBy) {
+        public Builder deletedBy(ActorId deletedBy) {
             this.deletedBy = deletedBy;
             return this;
         }

@@ -13,8 +13,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.user.User;
-import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
 import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.infra.TestDatabase;
@@ -54,7 +54,7 @@ class DatabaseUserViewTest {
     void doesNotReturnDeleted() throws Exception {
         User user = createUser();
 
-        user.delete(UserId.of(TestData.getRandomId()));
+        user.delete(ActorId.of(TestData.getRandomId()));
 
         userRepository.store(user);
 

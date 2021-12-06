@@ -2,6 +2,7 @@ package com.github.vti.amcrm.domain.user.command;
 
 import java.util.Objects;
 
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
@@ -10,12 +11,12 @@ import com.github.vti.amcrm.domain.user.exception.UserNotFoundException;
 
 public class DeleteUserCommand {
     private UserRepository userRepository;
-    private UserId userId;
+    private ActorId actorId;
     private UserId id;
 
     private DeleteUserCommand(Builder builder) {
         this.userRepository = Objects.requireNonNull(builder.userRepository);
-        this.userId = Objects.requireNonNull(builder.userId);
+        this.actorId = Objects.requireNonNull(builder.actorId);
         this.id = Objects.requireNonNull(builder.id);
     }
 
@@ -26,7 +27,7 @@ public class DeleteUserCommand {
             throw new UserNotFoundException();
         }
 
-        user.delete(this.userId);
+        user.delete(actorId);
 
         try {
             this.userRepository.store(user);
@@ -41,7 +42,7 @@ public class DeleteUserCommand {
 
     public static class Builder {
         private UserRepository userRepository;
-        private UserId userId;
+        private ActorId actorId;
         private UserId id;
 
         public Builder userRepository(UserRepository userRepository) {
@@ -49,8 +50,8 @@ public class DeleteUserCommand {
             return this;
         }
 
-        public Builder userId(UserId userId) {
-            this.userId = userId;
+        public Builder actorId(ActorId actorId) {
+            this.actorId = actorId;
             return this;
         }
 

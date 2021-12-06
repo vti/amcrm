@@ -15,6 +15,7 @@ import com.github.vti.amcrm.api.exception.ConflictException;
 import com.github.vti.amcrm.api.exception.NotFoundException;
 import com.github.vti.amcrm.api.exception.ServiceExceptionHandler;
 import com.github.vti.amcrm.api.service.request.CreateUserRequest;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.RepositoryRegistry;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.command.CreateUserCommand;
@@ -59,7 +60,7 @@ public class UserService extends BaseService {
         CreateUserCommand createUserCommand =
                 CreateUserCommand.builder()
                         .userRepository(this.repositoryRegistry.getUserRepository())
-                        .userId(UserId.of(client.getId()))
+                        .actorId(ActorId.of(client.getId()))
                         .id(UserId.of(request.getId()))
                         .name(request.getName())
                         .build();
@@ -80,7 +81,7 @@ public class UserService extends BaseService {
         ToggleUserAdminStatusCommand toggleUserAdminStatusCommand =
                 ToggleUserAdminStatusCommand.builder()
                         .userRepository(this.repositoryRegistry.getUserRepository())
-                        .userId(UserId.of(client.getId()))
+                        .actorId(ActorId.of(client.getId()))
                         .id(UserId.of(id))
                         .build();
 
@@ -100,7 +101,7 @@ public class UserService extends BaseService {
         DeleteUserCommand deleteUserCommand =
                 DeleteUserCommand.builder()
                         .userRepository(this.repositoryRegistry.getUserRepository())
-                        .userId(UserId.of(client.getId()))
+                        .actorId(ActorId.of(client.getId()))
                         .id(UserId.of(id))
                         .build();
 

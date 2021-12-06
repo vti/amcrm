@@ -2,21 +2,21 @@ package com.github.vti.amcrm.domain.customer.command;
 
 import java.util.Objects;
 
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.domain.customer.exception.CustomerNotFoundException;
-import com.github.vti.amcrm.domain.user.UserId;
 
 public class DeleteCustomerCommand {
     private CustomerRepository customerRepository;
-    private UserId userId;
+    private ActorId actorId;
     private CustomerId id;
 
     private DeleteCustomerCommand(Builder builder) {
         this.customerRepository = Objects.requireNonNull(builder.customerRepository);
-        this.userId = Objects.requireNonNull(builder.userId);
+        this.actorId = Objects.requireNonNull(builder.actorId);
         this.id = Objects.requireNonNull(builder.id);
     }
 
@@ -28,7 +28,7 @@ public class DeleteCustomerCommand {
             throw new CustomerNotFoundException();
         }
 
-        customer.delete(this.userId);
+        customer.delete(this.actorId);
 
         try {
             this.customerRepository.store(customer);
@@ -43,7 +43,7 @@ public class DeleteCustomerCommand {
 
     public static class Builder {
         private CustomerRepository customerRepository;
-        private UserId userId;
+        private ActorId actorId;
         private CustomerId id;
 
         public Builder customerRepository(CustomerRepository customerRepository) {
@@ -51,8 +51,8 @@ public class DeleteCustomerCommand {
             return this;
         }
 
-        public Builder userId(UserId userId) {
-            this.userId = userId;
+        public Builder actorId(ActorId actorId) {
+            this.actorId = actorId;
             return this;
         }
 

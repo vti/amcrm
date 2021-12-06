@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import com.github.vti.amcrm.domain.ActorId;
+
 public class DatabaseUtils {
 
     public static LocalDateTime toLocalDateTime(Instant instant) {
@@ -20,5 +22,13 @@ public class DatabaseUtils {
         }
 
         return datetime.toInstant(ZoneOffset.UTC);
+    }
+
+    public static ActorId toActorId(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return ActorId.of(value);
     }
 }

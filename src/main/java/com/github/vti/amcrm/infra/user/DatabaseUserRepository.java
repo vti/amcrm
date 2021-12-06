@@ -2,6 +2,7 @@ package com.github.vti.amcrm.infra.user;
 
 import static com.github.vti.amcrm.db.Tables.EVENT;
 import static com.github.vti.amcrm.db.Tables.USER;
+import static com.github.vti.amcrm.infra.DatabaseUtils.toActorId;
 import static com.github.vti.amcrm.infra.DatabaseUtils.toLocalDateTime;
 
 import java.sql.Connection;
@@ -79,17 +80,11 @@ public class DatabaseUserRepository implements UserRepository {
                         User.builder()
                                 .id(UserId.of(record.getValue(USER.ID)))
                                 .version(record.getValue(USER.VERSION))
-                                .isAdmin(record.getValue(USER.IS_ADMIN))
+                                .admin(record.getValue(USER.IS_ADMIN))
                                 .name(record.getValue(USER.NAME))
-                                .createdBy(UserId.of(record.getValue(USER.CREATED_BY)))
-                                .updatedBy(
-                                        record.getValue(USER.UPDATED_BY) == null
-                                                ? null
-                                                : UserId.of(record.getValue(USER.UPDATED_BY)))
-                                .deletedBy(
-                                        record.getValue(USER.DELETED_BY) == null
-                                                ? null
-                                                : UserId.of(record.getValue(USER.DELETED_BY)))
+                                .createdBy(toActorId(record.getValue(USER.CREATED_BY)))
+                                .updatedBy(toActorId(record.getValue(USER.UPDATED_BY)))
+                                .deletedBy(toActorId(record.getValue(USER.DELETED_BY)))
                                 .build();
 
                 return Optional.of(user);
@@ -199,7 +194,7 @@ public class DatabaseUserRepository implements UserRepository {
                             toLocalDateTime(event.getCreatedAt()),
                             event.getName(),
                             event.getOriginId().value(),
-                            event.getUserId().value(),
+                            event.getActorId().value(),
                             event.getPayload()
                                     .map(
                                             p -> {
