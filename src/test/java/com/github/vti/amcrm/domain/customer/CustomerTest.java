@@ -2,11 +2,11 @@ package com.github.vti.amcrm.domain.customer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.github.vti.amcrm.domain.customer.event.*;
 import org.junit.jupiter.api.Test;
 
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
+import com.github.vti.amcrm.domain.customer.event.*;
 import com.github.vti.amcrm.domain.user.UserId;
 
 class CustomerTest {
@@ -38,7 +38,8 @@ class CustomerTest {
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getUserId());
-        assertEquals(CustomerNameChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
+        assertEquals(
+                CustomerNameChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
     }
 
     @Test
@@ -56,7 +57,9 @@ class CustomerTest {
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getUserId());
-        assertEquals(CustomerSurnameChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
+        assertEquals(
+                CustomerSurnameChanged.class.getSimpleName(),
+                customer.getEvents().get(0).getName());
     }
 
     @Test
@@ -74,7 +77,8 @@ class CustomerTest {
         assertEquals(1, customer.getEvents().size());
         assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getUserId());
-        assertEquals(CustomerPhotoChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
+        assertEquals(
+                CustomerPhotoChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
     }
 
     @Test
