@@ -31,6 +31,7 @@ public class CustomerSummary {
         return surname;
     }
 
+    // TODO: this needs to be properly url escaped when needed
     public String getPhotoLocation() {
         if (photoLocation != null && baseUrl != null && !photoLocation.startsWith("http")) {
             return baseUrl + "/" + photoLocation;

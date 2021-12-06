@@ -9,7 +9,9 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
 import com.github.vti.amcrm.db.tables.Customer;
+import com.github.vti.amcrm.db.tables.Event;
 import com.github.vti.amcrm.db.tables.records.CustomerRecord;
+import com.github.vti.amcrm.db.tables.records.EventRecord;
 
 /** A class modelling foreign key relationships and constraints of tables in the default schema. */
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
@@ -25,4 +27,7 @@ public class Keys {
                     DSL.name("pk_customer"),
                     new TableField[] {Customer.CUSTOMER.ID},
                     true);
+    public static final UniqueKey<EventRecord> PK_EVENT =
+            Internal.createUniqueKey(
+                    Event.EVENT, DSL.name("pk_event"), new TableField[] {Event.EVENT.ID}, true);
 }

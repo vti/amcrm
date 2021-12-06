@@ -3,9 +3,12 @@ package com.github.vti.amcrm.domain.customer;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.github.vti.amcrm.domain.Entity;
+import com.github.vti.amcrm.domain.Event;
+import com.github.vti.amcrm.domain.customer.event.*;
 import com.github.vti.amcrm.domain.user.UserId;
 
-public class Customer {
+public class Customer extends Entity<Event<CustomerId>> {
     private CustomerId id;
     private Long version;
     private String name;
@@ -24,6 +27,10 @@ public class Customer {
         this.createdBy = Objects.requireNonNull(builder.createdBy);
         this.updatedBy = builder.updatedBy;
         this.deletedBy = builder.deletedBy;
+
+        if (this.version == 0L) {
+            this.addEvent(new CustomerCreated(this.id, this.createdBy));
+        }
     }
 
     public CustomerId getId() {
@@ -65,16 +72,22 @@ public class Customer {
     public void changeName(UserId userId, String newName) {
         this.name = newName;
         this.updatedBy = userId;
+
+        this.addEvent(new CustomerNameChanged(this.id, this.updatedBy));
     }
 
     public void changeSurname(UserId userId, String newSurname) {
         this.surname = newSurname;
         this.updatedBy = userId;
+
+        this.addEvent(new CustomerSurnameChanged(this.id, this.updatedBy));
     }
 
     public void changePhotoLocation(UserId userId, String photoLocation) {
         this.photoLocation = photoLocation;
         this.updatedBy = userId;
+
+        this.addEvent(new CustomerPhotoChanged(this.id, this.updatedBy));
     }
 
     public void delete(UserId userId) {
@@ -83,6 +96,8 @@ public class Customer {
         }
 
         this.deletedBy = userId;
+
+        this.addEvent(new CustomerDeleted(this.id, this.deletedBy));
     }
 
     public static Builder builder() {

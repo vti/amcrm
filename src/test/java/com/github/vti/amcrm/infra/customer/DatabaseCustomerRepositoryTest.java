@@ -67,6 +67,17 @@ class DatabaseCustomerRepositoryTest {
     }
 
     @Test
+    void storingClearsAllEvents() throws Exception {
+        Customer customer = TestFactory.newCustomer();
+
+        assertTrue(customer.getEvents().size() != 0);
+
+        customerRepository.store(customer);
+
+        assertEquals(0, customer.getEvents().size());
+    }
+
+    @Test
     void storesUpdatedCustomer() throws Exception {
         UserId userId = UserId.of(TestData.getRandomId());
         Customer customer = TestFactory.newCustomer();

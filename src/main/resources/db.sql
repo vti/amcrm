@@ -12,3 +12,12 @@ CREATE TABLE customer (
     deleted_by TEXT
 );
 
+DROP TABLE IF EXISTS event;
+CREATE TABLE event (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    origin_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    payload TEXT
+);
+

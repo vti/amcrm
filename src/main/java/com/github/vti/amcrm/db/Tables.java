@@ -4,6 +4,8 @@
 package com.github.vti.amcrm.db;
 
 import com.github.vti.amcrm.db.tables.Customer;
+import com.github.vti.amcrm.db.tables.Event;
+import com.github.vti.amcrm.db.tables.SqliteSequence;
 
 /** Convenience access to all tables in the default schema. */
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
@@ -11,4 +13,10 @@ public class Tables {
 
     /** The table <code>customer</code>. */
     public static final Customer CUSTOMER = Customer.CUSTOMER;
+
+    /** The table <code>event</code>. */
+    public static final Event EVENT = Event.EVENT;
+
+    /** The table <code>sqlite_sequence</code>. */
+    public static final SqliteSequence SQLITE_SEQUENCE = SqliteSequence.SQLITE_SEQUENCE;
 }

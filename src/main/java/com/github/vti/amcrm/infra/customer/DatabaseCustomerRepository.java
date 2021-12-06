@@ -1,9 +1,11 @@
 package com.github.vti.amcrm.infra.customer;
 
 import static com.github.vti.amcrm.db.Tables.CUSTOMER;
+import static com.github.vti.amcrm.db.Tables.EVENT;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -13,6 +15,10 @@ import org.jooq.*;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import com.github.vti.amcrm.api.DefaultObjectMapper;
+import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.domain.customer.CustomerRepository;
@@ -148,11 +154,41 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                 }
             }
 
+            storeEvents(connection, customer.getEvents());
+
             connection.commit();
 
             customer.incrementVersion();
+            customer.clearEvents();
         } catch (SQLException e) {
             throw new RuntimeException("Error storing", e);
+        }
+    }
+
+    private void storeEvents(Connection connection, List<Event<CustomerId>> events) {
+        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+
+        for (Event<CustomerId> event : events) {
+            create.insertInto(EVENT, EVENT.NAME, EVENT.ORIGIN_ID, EVENT.USER_ID, EVENT.PAYLOAD)
+                    .values(
+                            event.getName(),
+                            event.getOriginId().value(),
+                            event.getUserId().value(),
+                            event.getPayload()
+                                    .map(
+                                            p -> {
+                                                try {
+                                                    return String.valueOf(
+                                                            DefaultObjectMapper.get()
+                                                                    .writeValueAsBytes(p));
+                                                } catch (JsonProcessingException e) {
+                                                    throw new RuntimeException(
+                                                            "Event payload serialization failed",
+                                                            e);
+                                                }
+                                            })
+                                    .orElse(null))
+                    .execute();
         }
     }
 }
