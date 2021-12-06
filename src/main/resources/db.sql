@@ -21,3 +21,16 @@ CREATE TABLE event (
     payload TEXT
 );
 
+DROP TABLE IF EXISTS user;
+CREATE TABLE user (
+    id TEXT PRIMARY KEY,
+    version BIGINT NOT NULL,
+
+    name TEXT NOT NULL,
+    is_admin BOOLEAN NOT NULL,
+
+    created_by TEXT NOT NULL,
+    updated_by TEXT,
+    deleted_by TEXT
+);
+
