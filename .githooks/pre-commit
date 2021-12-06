@@ -1,0 +1,10 @@
+#!/bin/sh
+
+./mvnw spotless:check
+
+if [ $? -ne 0 ]; then
+    echo
+    echo 'ERROR: Code not properly formatted. Commit aborted. Run ./mvnw spotless:apply'
+    echo
+    exit 255
+fi
