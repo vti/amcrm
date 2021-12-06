@@ -1,6 +1,7 @@
 package com.github.vti.amcrm;
 
 import com.github.vti.amcrm.api.service.request.CreateCustomerRequest;
+import com.github.vti.amcrm.api.service.request.CreateUserRequest;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.domain.user.User;
@@ -24,6 +25,10 @@ public class TestFactory {
                 .name(TestData.getRandomName())
                 .surname(TestData.getRandomSurname())
                 .createdBy(UserId.of(TestData.getRandomId()));
+    }
+
+    public static CreateUserRequest newCreateUserRequest() {
+        return new CreateUserRequest(TestData.getRandomId(), false, TestData.getRandomName());
     }
 
     public static Customer newCustomer() {

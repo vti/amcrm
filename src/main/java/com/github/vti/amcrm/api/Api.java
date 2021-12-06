@@ -19,6 +19,7 @@ import com.github.vti.amcrm.Config;
 import com.github.vti.amcrm.api.service.AuthenticationService;
 import com.github.vti.amcrm.api.service.CustomerService;
 import com.github.vti.amcrm.api.service.PingService;
+import com.github.vti.amcrm.api.service.UserService;
 import com.github.vti.amcrm.domain.RepositoryRegistry;
 import com.github.vti.amcrm.infra.photo.LocalPhotoStorage;
 import com.github.vti.amcrm.infra.photo.PhotoStorage;
@@ -85,6 +86,8 @@ public final class Api {
                 .annotatedService(
                         Resource.CUSTOMERS.value(),
                         new CustomerService(repositoryRegistry, viewRegistry, photoStorage))
+                .annotatedService(
+                        Resource.USERS.value(), new UserService(repositoryRegistry, viewRegistry))
                 .serviceUnder("/docs", DocService.builder().build())
                 .serviceUnder("/", FileService.of(publicDir))
                 .build();
@@ -145,7 +148,8 @@ public final class Api {
 
     public static enum Resource {
         PING("/ping"),
-        CUSTOMERS("/customers");
+        CUSTOMERS("/customers"),
+        USERS("/users");
 
         private String value;
 

@@ -5,12 +5,19 @@ import java.util.Map;
 
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
+import com.github.vti.amcrm.domain.user.User;
+import com.github.vti.amcrm.domain.user.UserId;
 
 public class MemoryStorage {
 
     Map<CustomerId, Customer> customerStorage = new HashMap<>();
+    Map<UserId, User> userStorage = new HashMap<>();
 
     public Map<CustomerId, Customer> getCustomerStorage() {
         return customerStorage;
+    }
+
+    public Map<UserId, User> getUserStorage() {
+        return userStorage;
     }
 }

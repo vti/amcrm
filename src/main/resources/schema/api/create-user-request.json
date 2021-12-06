@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "$ref": "classpath:/schema/api/definitions.json#/definitions/customerId"
+        },
+        "admin" : {
+            "type": "boolean"
+        },
+        "name": {
+            "$ref": "classpath:/schema/api/definitions.json#/definitions/name"
+        }
+    },
+    "required": ["id", "admin","name"]
+}

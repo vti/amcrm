@@ -64,6 +64,21 @@ public class CustomerResourceTest {
     }
 
     @Test
+    void patchesCustomer() throws JsonProcessingException {
+        String customerId = TestFunctional.createCustomer();
+
+        CustomerRequestModel customer = new CustomerRequestModel();
+        customer.name = TestData.getRandomName();
+
+        given().headers(TestFunctional.getAuthenticatedUserHeaders())
+                .body(DefaultObjectMapper.get().writeValueAsBytes(customer))
+                .when()
+                .patch(TestFunctional.buildPath(Api.Resource.CUSTOMERS, customerId))
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
     void deletesCustomer() throws JsonProcessingException {
         String customerId = TestFunctional.createCustomer();
 

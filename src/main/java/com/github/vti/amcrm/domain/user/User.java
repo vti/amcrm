@@ -10,7 +10,7 @@ public class User extends Entity<Event<UserId>> {
     private UserId id;
     private Long version;
     private String name;
-    private Boolean isAdmin;
+    private Boolean admin;
     private UserId createdBy;
     private UserId updatedBy = null;
     private UserId deletedBy = null;
@@ -18,7 +18,7 @@ public class User extends Entity<Event<UserId>> {
     private User(Builder builder) {
         this.id = Objects.requireNonNull(builder.id, "id");
         this.version = Objects.requireNonNull(builder.version, "version");
-        this.isAdmin = Objects.requireNonNull(builder.isAdmin, "isAdmin");
+        this.admin = Objects.requireNonNull(builder.admin, "isAdmin");
         this.name = Objects.requireNonNull(builder.name, "name");
         this.createdBy = Objects.requireNonNull(builder.createdBy, "createdBy");
         this.updatedBy = builder.updatedBy;
@@ -38,7 +38,7 @@ public class User extends Entity<Event<UserId>> {
     }
 
     public Boolean isAdmin() {
-        return isAdmin;
+        return admin;
     }
 
     public String getName() {
@@ -58,7 +58,7 @@ public class User extends Entity<Event<UserId>> {
     }
 
     public void toggleAdminStatus(UserId userId) {
-        this.isAdmin = !this.isAdmin;
+        this.admin = !this.admin;
 
         this.updatedBy = userId;
 
@@ -103,7 +103,7 @@ public class User extends Entity<Event<UserId>> {
     public static class Builder {
         private UserId id;
         private Long version = 0L;
-        private Boolean isAdmin = false;
+        private Boolean admin = false;
         private String name;
         private UserId createdBy;
         private UserId updatedBy;
@@ -120,7 +120,7 @@ public class User extends Entity<Event<UserId>> {
         }
 
         public Builder isAdmin(Boolean isAdmin) {
-            this.isAdmin = isAdmin;
+            this.admin = isAdmin;
             return this;
         }
 
