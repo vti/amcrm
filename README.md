@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 ```
 
-Fields error example:
+Validation error example:
 
 ```http
 HTTP/1.1 422 Unprocessable Entity
@@ -80,6 +80,38 @@ PATCH /customers/{customerId}
 
 ```http
 DELETE /customers/{customerId}
+```
+
+#### Users
+
+*ListUsers*
+
+```http
+GET /users
+```
+
+*CreateUser*
+
+```http
+POST /users
+```
+
+*GetUserDetails*
+
+```http
+GET /users/{userId}
+```
+
+*ToggleUserAdminStatus*
+
+```http
+POST /users/{userId}/admin
+```
+
+*DeleteUser*
+
+```http
+DELETE /users/{userId}
 ```
 
 ## Compiling & Running application
@@ -166,7 +198,8 @@ Applications supports two storages:
 
 ### Code Style & Formatting
 
-Make sure before submitting a PR the code is properly formatted. This is done automatically by running the following command:
+Make sure before submitting a PR the code is properly formatted. This is done automatically by running the following
+command (or install a git hook `git config core.hooksPath .githooks`):
 
 ```bash
 $ ./mvnw spotless:apply
@@ -216,18 +249,20 @@ The implementation follows Clean Architecture / Domain Driven Design approach. T
 
 Domain holds the domain logic of the application without relying on a specific storage or a framework. Domain enforces its own interfaces for different purposes that are implemented based on the need.
 
-Domain contains of Entities, Values Objects, Repositories & Commands.
+Domain contains of Entities, Events, Values Objects, Repositories & Commands.
 
-- Entities: identifiable objects,
-- Value Objects: immutable structures
-- Repositories: storage abstractions
+- Entities: identifiable objects that implement business behavior.
+- Events: events that happened in the domain (e.g. UserCreated).
+- Value Objects: immutable structures.
+- Repositories: storage abstractions.
 - Commands: actions performed on domain objects to implement the business logic.
 
 ### Infrastructure
 
 Infrastructure implements domain interfaces, provides specific helper classes like factories.
 
-In addition infrastructure holds Views that are the optimized read-only views for the storages. They can be used for viewing the domain objects through some mapping classes, building reports etc.
+In addition infrastructure holds Views that are the optimized read-only views for the storages. They can be used for
+viewing the domain objects through some mapping classes, building reports etc.
 
 ### API
 
@@ -235,7 +270,8 @@ API is an adaptor that plugs into the domain and exposes different actions throu
 
 ### Services
 
-Resources are organized as Services with appropriate method mapping (e.g. service `CustomerService` with `listCutomers()` is mapped to `GET /customers`).
+Resources are organized as Services with appropriate method mapping (e.g. service `CustomerService`
+with `listCutomers()` is mapped to `GET /customers`).
 
 #### Validation
 
@@ -243,4 +279,19 @@ Input validation is done by using JSON schemas.
 
 #### Data Mapping
 
-Data from domain to the users is mapped by using DTOs (e.g. CustomerDetails).
+Data from domain to the users is mapped by using DTOs (e.g. CustomerSummary).
+
+## Notable Dependencies, Frameworks & Libraries
+
+[jooq](https://www.jooq.org/) — is a thin abstraction over SQL that by using code generations guarantees type safety (
+e.g. typos in the column names, wrong type mapping etc).
+
+[armeria](https://armeria.dev) — is a Netty-based microservice framework that in addition to REST-like services allows
+to build RPCs systems (Thrift, gRPC). It is event-driven, supports different metrics & tracing collection and provides a
+useful documentation/playground service out of the box.
+
+[jcommander](https://jcommander.org/) — simplifies command line argument parsing.
+
+[rest-assured](https://rest-assured.io/) — DSL for building functional API tests.
+
+[jackson](https://github.com/FasterXML/jackson) — swiss-army knife for JSON/YAML processing.
