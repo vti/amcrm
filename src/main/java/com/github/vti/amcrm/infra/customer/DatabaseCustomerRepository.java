@@ -7,6 +7,7 @@ import static com.github.vti.amcrm.infra.DatabaseUtils.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import org.jooq.impl.DSL;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vti.amcrm.api.DefaultObjectMapper;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
@@ -129,11 +131,11 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                     customer.getCreatedBy().value(),
                                     toLocalDateTime(customer.getUpdatedAt()),
                                     Optional.ofNullable(customer.getUpdatedBy())
-                                            .map(v -> v.value())
+                                            .map(ActorId::value)
                                             .orElse(null),
                                     toLocalDateTime(customer.getDeletedAt()),
                                     Optional.ofNullable(customer.getDeletedBy())
-                                            .map(v -> v.value())
+                                            .map(ActorId::value)
                                             .orElse(null))
                             .execute();
                 } catch (DataAccessException e) {
@@ -159,13 +161,13 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                 .set(
                                         CUSTOMER.UPDATED_BY,
                                         Optional.ofNullable(customer.getUpdatedBy())
-                                                .map(v -> v.value())
+                                                .map(ActorId::value)
                                                 .orElse(null))
                                 .set(CUSTOMER.DELETED_AT, toLocalDateTime(customer.getCreatedAt()))
                                 .set(
                                         CUSTOMER.DELETED_BY,
                                         Optional.ofNullable(customer.getDeletedBy())
-                                                .map(v -> v.value())
+                                                .map(ActorId::value)
                                                 .orElse(null))
                                 .where(CUSTOMER.ID.eq(customer.getId().value()))
                                 .and(CUSTOMER.VERSION.eq(customer.getVersion()))
@@ -207,7 +209,7 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                     .map(
                                             p -> {
                                                 try {
-                                                    return String.valueOf(
+                                                    return Arrays.toString(
                                                             DefaultObjectMapper.get()
                                                                     .writeValueAsBytes(p));
                                                 } catch (JsonProcessingException e) {

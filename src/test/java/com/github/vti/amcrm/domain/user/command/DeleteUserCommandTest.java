@@ -18,7 +18,7 @@ import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.domain.user.exception.UserNotFoundException;
 import com.github.vti.amcrm.infra.user.MemoryUserRepository;
 
-class DeleteUserCommandTest {
+public class DeleteUserCommandTest {
     private UserRepository userRepository;
 
     @BeforeEach
@@ -47,7 +47,7 @@ class DeleteUserCommandTest {
     }
 
     @Test
-    public void throwsOnUnknownUser() throws UserExistsException, UserNotFoundException {
+    public void throwsOnUnknownUser() {
         ActorId actorId = ActorId.of(TestData.getRandomId());
 
         ToggleUserAdminStatusCommand command =
@@ -57,7 +57,7 @@ class DeleteUserCommandTest {
                         .id(UserId.of(TestData.getRandomId()))
                         .build();
 
-        assertThrows(UserNotFoundException.class, () -> command.execute());
+        assertThrows(UserNotFoundException.class, command::execute);
     }
 
     public UserId createUser() throws UserExistsException {

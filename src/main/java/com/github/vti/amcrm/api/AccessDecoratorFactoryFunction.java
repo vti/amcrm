@@ -13,8 +13,6 @@ public final class AccessDecoratorFactoryFunction
     @Override
     public Function<? super HttpService, ? extends HttpService> newDecorator(
             AccessDecorator parameter) {
-        return (delegate) -> {
-            return new AccessService(delegate, parameter.role());
-        };
+        return (delegate) -> new AccessService(delegate, parameter.role());
     }
 }

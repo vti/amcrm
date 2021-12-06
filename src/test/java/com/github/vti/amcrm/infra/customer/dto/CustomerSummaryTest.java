@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-class CustomerSummaryTest {
+public class CustomerSummaryTest {
 
     @Test
     public void returnsPrefixedPhotoLocationWhenNotAbsolute() {

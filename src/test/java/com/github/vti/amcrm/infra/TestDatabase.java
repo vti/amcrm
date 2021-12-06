@@ -18,13 +18,12 @@ import javax.sql.DataSource;
 import org.sqlite.SQLiteDataSource;
 
 public class TestDatabase {
-    public static DataSource setupDatabase(Path tmpDir) throws Exception {
+    public static DataSource setupDatabase(Path tmpDir) {
         SQLiteDataSource dataSource = new SQLiteDataSource();
 
         System.getProperties().setProperty("org.jooq.no-logo", "true");
 
-        dataSource.setUrl(
-                String.format("jdbc:sqlite:%s", Paths.get(tmpDir.toString(), "db.db").toString()));
+        dataSource.setUrl(String.format("jdbc:sqlite:%s", Paths.get(tmpDir.toString(), "db.db")));
 
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);

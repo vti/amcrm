@@ -9,7 +9,7 @@ import com.github.vti.amcrm.TestFactory;
 import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.customer.event.*;
 
-class CustomerTest {
+public class CustomerTest {
 
     @Test
     void buildsNewCustomer() {

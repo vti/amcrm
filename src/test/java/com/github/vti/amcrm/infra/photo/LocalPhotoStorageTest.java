@@ -13,7 +13,7 @@ import org.junit.jupiter.api.io.TempDir;
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFileUtils;
 
-class LocalPhotoStorageTest {
+public class LocalPhotoStorageTest {
 
     private LocalPhotoStorage storage;
 

@@ -54,20 +54,12 @@ public class Photo {
     }
 
     public byte[] toByteArray() {
-        ByteArrayOutputStream baos = null;
-        try {
-            baos = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "JPEG", baos);
 
             return baos.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException();
-        } finally {
-            try {
-                baos.close();
-            } catch (Exception e) {
-                throw new RuntimeException();
-            }
         }
     }
 }

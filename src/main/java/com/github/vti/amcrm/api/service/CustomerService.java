@@ -49,14 +49,14 @@ public class CustomerService extends BaseService {
 
     @Get("")
     public List<CustomerSummary> getCustomerList() {
-        List<CustomerSummary> customers = this.viewRegistry.getCustomerView().find();
+        List<CustomerSummary> customers = viewRegistry.getCustomerView().find();
 
         return customers;
     }
 
     @Get("/{id}")
     public CustomerSummary getCustomerSummary(@Param("id") String id) {
-        Optional<CustomerSummary> customer = this.viewRegistry.getCustomerView().load(id);
+        Optional<CustomerSummary> customer = viewRegistry.getCustomerView().load(id);
 
         return customer.orElseThrow(NotFoundException::new);
     }
@@ -67,19 +67,21 @@ public class CustomerService extends BaseService {
 
         CreateCustomerCommand createCustomerCommand =
                 CreateCustomerCommand.builder()
-                        .customerRepository(this.repositoryRegistry.getCustomerRepository())
+                        .customerRepository(repositoryRegistry.getCustomerRepository())
                         .actorId(ActorId.of(client.getId()))
                         .id(CustomerId.of(request.getId()))
                         .name(request.getName())
                         .surname(request.getSurname())
-                        .photoLocation(
-                                request.getPhotoBlob().map(p -> processPhoto(p)).orElse(null))
+                        .photoLocation(request.getPhotoBlob().map(this::processPhoto).orElse(null))
                         .build();
 
         try {
             createCustomerCommand.execute();
 
-            return this.viewRegistry.getCustomerView().load(request.getId()).get();
+            return viewRegistry
+                    .getCustomerView()
+                    .load(request.getId())
+                    .orElseThrow(RuntimeException::new);
         } catch (CustomerExistsException e) {
             throw new ConflictException("Customer already exists");
         }
@@ -92,19 +94,18 @@ public class CustomerService extends BaseService {
         // TODO: old photo is not removed nor replaced
         PatchCustomerCommand patchCustomerCommand =
                 PatchCustomerCommand.builder()
-                        .customerRepository(this.repositoryRegistry.getCustomerRepository())
+                        .customerRepository(repositoryRegistry.getCustomerRepository())
                         .actorId(ActorId.of(client.getId()))
                         .id(CustomerId.of(id))
                         .name(request.getName())
                         .surname(request.getSurname())
-                        .photoLocation(
-                                request.getPhotoBlob().map(p -> processPhoto(p)).orElse(null))
+                        .photoLocation(request.getPhotoBlob().map(this::processPhoto).orElse(null))
                         .build();
 
         try {
             patchCustomerCommand.execute();
 
-            return this.viewRegistry.getCustomerView().load(id).get();
+            return viewRegistry.getCustomerView().load(id).orElseThrow(RuntimeException::new);
         } catch (CustomerNotFoundException e) {
             throw new NotFoundException();
         }
@@ -116,7 +117,7 @@ public class CustomerService extends BaseService {
 
         DeleteCustomerCommand deleteCustomerCommand =
                 DeleteCustomerCommand.builder()
-                        .customerRepository(this.repositoryRegistry.getCustomerRepository())
+                        .customerRepository(repositoryRegistry.getCustomerRepository())
                         .actorId(ActorId.of(client.getId()))
                         .id(CustomerId.of(id))
                         .build();

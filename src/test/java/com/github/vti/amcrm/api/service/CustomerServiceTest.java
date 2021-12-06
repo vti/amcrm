@@ -14,9 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
-import com.linecorp.armeria.common.HttpMethod;
-import com.linecorp.armeria.common.HttpRequest;
-
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
 import com.github.vti.amcrm.TestFileUtils;
@@ -39,7 +36,7 @@ public class CustomerServiceTest {
 
     private CustomerService service;
     private Client client;
-    private String baseUrl = "http://localhost:4567";
+    private final String baseUrl = "http://localhost:4567";
 
     @TempDir Path tmpDir;
 
@@ -58,7 +55,6 @@ public class CustomerServiceTest {
 
     @Test
     void throwsOnUnknownId() {
-        HttpRequest req = HttpRequest.of(HttpMethod.GET, "/customers/" + TestData.getRandomId());
         assertThrows(
                 NotFoundException.class, () -> service.getCustomerSummary(TestData.getRandomId()));
     }

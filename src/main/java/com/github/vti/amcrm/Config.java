@@ -19,13 +19,15 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 public class Config {
-    public static int DEFAULT_PORT = 4567;
-    public static String DEFAULT_BASE_URL = "http://localhost:" + DEFAULT_PORT;
-    public static StorageProvider DEFAULT_STORAGE_PROVIDER = StorageProvider.MEMORY;
+    public static final int DEFAULT_PORT = 4567;
+    public static final String DEFAULT_BASE_URL = "http://localhost:" + DEFAULT_PORT;
+    public static final StorageProvider DEFAULT_STORAGE_PROVIDER = StorageProvider.MEMORY;
 
     private URL baseUrl;
     private int port;
     private StorageConfig storage;
+
+    private Config() {}
 
     private Config(Builder builder) {
         port = builder.port == null ? DEFAULT_PORT : builder.port;
@@ -51,12 +53,6 @@ public class Config {
         } catch (MalformedURLException e) {
             throw new RuntimeException("Invalid base url");
         }
-    }
-
-    private Config() {}
-
-    public static Config defaults() {
-        return Config.builder().build();
     }
 
     public URL getBaseUrl() {
@@ -182,8 +178,8 @@ public class Config {
     }
 
     public static class StorageConfig {
-        private StorageProvider provider = DEFAULT_STORAGE_PROVIDER;
-        private Map<String, String> options = null;
+        private StorageProvider provider;
+        private Map<String, String> options;
 
         private StorageConfig() {}
 
@@ -206,7 +202,7 @@ public class Config {
         MEMORY(),
 
         @JsonProperty("database")
-        DATABASE();
+        DATABASE()
     }
 
     public enum Env {

@@ -17,7 +17,7 @@ import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.domain.user.exception.UserNotFoundException;
 import com.github.vti.amcrm.infra.user.MemoryUserRepository;
 
-class ToggleUserAdminStatusCommandTest {
+public class ToggleUserAdminStatusCommandTest {
     private UserRepository userRepository;
 
     @BeforeEach
@@ -48,7 +48,7 @@ class ToggleUserAdminStatusCommandTest {
     }
 
     @Test
-    public void throwsOnUnknownUser() throws UserExistsException, UserNotFoundException {
+    public void throwsOnUnknownUser() {
         ActorId actorId = ActorId.of(TestData.getRandomId());
 
         ToggleUserAdminStatusCommand command =
@@ -58,7 +58,7 @@ class ToggleUserAdminStatusCommandTest {
                         .id(UserId.of(TestData.getRandomId()))
                         .build();
 
-        assertThrows(UserNotFoundException.class, () -> command.execute());
+        assertThrows(UserNotFoundException.class, command::execute);
     }
 
     public UserId createUser() throws UserExistsException {

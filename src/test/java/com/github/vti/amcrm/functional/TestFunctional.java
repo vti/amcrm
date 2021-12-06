@@ -4,10 +4,8 @@ import static io.restassured.RestAssured.given;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -88,8 +86,7 @@ public class TestFunctional {
     }
 
     public static String buildPath(Api.Resource resource, String... parts) {
-        return String.join(
-                "/", resource.toString(), Arrays.stream(parts).collect(Collectors.joining("/")));
+        return String.join("/", resource.toString(), String.join("/", parts));
     }
 
     public enum Model {
@@ -99,7 +96,7 @@ public class TestFunctional {
         USER_LIST("schema/api/model/user-list.json"),
         VALIDATION_ERROR("schema/api/model/validation-error.json");
 
-        private String value;
+        private final String value;
 
         Model(String value) {
             this.value = value;

@@ -17,7 +17,7 @@ import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.domain.customer.exception.CustomerNotFoundException;
 import com.github.vti.amcrm.infra.customer.MemoryCustomerRepository;
 
-class PatchCustomerCommandTest {
+public class PatchCustomerCommandTest {
     private CustomerRepository customerRepository;
 
     @BeforeEach
@@ -48,8 +48,7 @@ class PatchCustomerCommandTest {
     }
 
     @Test
-    public void throwsOnUnknownCustomer()
-            throws CustomerExistsException, CustomerNotFoundException {
+    public void throwsOnUnknownCustomer() {
         ActorId actorId = ActorId.of(TestData.getRandomId());
 
         PatchCustomerCommand command =
@@ -60,7 +59,7 @@ class PatchCustomerCommandTest {
                         .name(TestData.getRandomName())
                         .build();
 
-        assertThrows(CustomerNotFoundException.class, () -> command.execute());
+        assertThrows(CustomerNotFoundException.class, command::execute);
     }
 
     public CustomerId createCustomer() throws CustomerExistsException {

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConflictException extends RuntimeException {
-    private String message;
+    private final String message;
 
     public ConflictException(String message) {
         super();

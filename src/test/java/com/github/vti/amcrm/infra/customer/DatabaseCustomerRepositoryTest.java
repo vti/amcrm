@@ -21,7 +21,7 @@ import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 import com.github.vti.amcrm.infra.TestDatabase;
 
-class DatabaseCustomerRepositoryTest {
+public class DatabaseCustomerRepositoryTest {
 
     private DataSource dataSource;
     private CustomerRepository customerRepository;
@@ -101,11 +101,7 @@ class DatabaseCustomerRepositoryTest {
 
         customerRepository.store(customer1);
 
-        assertThrows(
-                CustomerExistsException.class,
-                () -> {
-                    customerRepository.store(customer2);
-                });
+        assertThrows(CustomerExistsException.class, () -> customerRepository.store(customer2));
     }
 
     @Test
@@ -129,11 +125,7 @@ class DatabaseCustomerRepositoryTest {
         assertEquals(2, customer1.getVersion());
         assertEquals(1, customer2.getVersion());
 
-        assertThrows(
-                OptimisticLockException.class,
-                () -> {
-                    customerRepository.store(customer2);
-                });
+        assertThrows(OptimisticLockException.class, () -> customerRepository.store(customer2));
     }
 
     @Test

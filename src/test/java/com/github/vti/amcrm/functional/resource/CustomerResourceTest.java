@@ -22,7 +22,7 @@ public class CustomerResourceTest {
     private Api api;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         api = TestFunctional.buildApi();
 
         api.start();

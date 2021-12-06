@@ -14,10 +14,10 @@ Upon an error the backend returns an error object with the details when possible
 
 A typical error has the following structure:
 
-| Field            | Type          | Description                                 |
-| ---              |---------------|---------------------------------------------|
-| messsage         | string        | Human readable error message                |
-| details          | array[string] | A list of messages providing more details   |
+| Field    | Type          | Description                               |
+|----------|---------------|-------------------------------------------|
+| messsage | string        | Human readable error message              |
+| details  | array[string] | A list of messages providing more details |
 
 Generic error example:
 
@@ -124,7 +124,7 @@ Build & Runtime requirements:
 
 ### Storage
 
-Applications supports two storages:
+Application supports two storages:
 
 - in-memory (not thread-safe, primarily for testing)
 - database (transactional optimistic locking)
@@ -239,7 +239,8 @@ Tests are broken down into:
 
 ## Code Structure & Reasoning
 
-The implementation follows Clean Architecture / Domain Driven Design approach. Thus application is split into the following parts:
+The implementation follows Clean Architecture / Domain Driven Design approach. Thus, application is split into the
+following parts:
 
 - domain
 - infra
@@ -261,7 +262,7 @@ Domain contains of Entities, Events, Values Objects, Repositories & Commands.
 
 Infrastructure implements domain interfaces, provides specific helper classes like factories.
 
-In addition infrastructure holds Views that are the optimized read-only views for the storages. They can be used for
+In addition, infrastructure holds Views that are the optimized read-only views for the storages. They can be used for
 viewing the domain objects through some mapping classes, building reports etc.
 
 ### API
@@ -284,10 +285,10 @@ Data from domain to the users is mapped by using DTOs (e.g. CustomerSummary).
 ## Notable Dependencies, Frameworks & Libraries
 
 [jooq](https://www.jooq.org/) — is a thin abstraction over SQL that by using code generations guarantees type safety (
-e.g. typos in the column names, wrong type mapping etc).
+e.g. typos in the column names, wrong type mapping etc.).
 
 [armeria](https://armeria.dev) — is a Netty-based microservice framework that in addition to REST-like services allows
-to build RPCs systems (Thrift, gRPC). It is event-driven, supports different metrics & tracing collection and provides a
+building RPCs systems (Thrift, gRPC). It is event-driven, supports different metrics & tracing collection and provides a
 useful documentation/playground service out of the box.
 
 [jcommander](https://jcommander.org/) — simplifies command line argument parsing.

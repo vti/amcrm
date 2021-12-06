@@ -25,7 +25,7 @@ public class MemoryUserRepository implements UserRepository {
         if (storage.containsKey(customer.getId())) {
             User existingUser = storage.get(customer.getId());
 
-            if (existingUser.getVersion() != customer.getVersion()) {
+            if (!existingUser.getVersion().equals(customer.getVersion())) {
                 throw new UserExistsException();
             }
         }

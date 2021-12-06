@@ -9,11 +9,11 @@ import com.github.vti.amcrm.domain.user.UserRepository;
 import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 
 public class CreateUserCommand {
-    private UserRepository userRepository;
-    private ActorId actorId;
-    private UserId id;
-    private Boolean admin;
-    private String name;
+    private final UserRepository userRepository;
+    private final ActorId actorId;
+    private final UserId id;
+    private final Boolean admin;
+    private final String name;
 
     private CreateUserCommand(Builder builder) {
         this.userRepository = Objects.requireNonNull(builder.userRepository, "userRepository");

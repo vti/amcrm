@@ -17,7 +17,7 @@ import com.github.vti.amcrm.domain.user.UserRepository;
 import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.infra.user.MemoryUserRepository;
 
-class CreateUserCommandTest {
+public class CreateUserCommandTest {
 
     private UserRepository userRepository;
 

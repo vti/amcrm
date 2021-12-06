@@ -14,7 +14,7 @@ import com.linecorp.armeria.server.annotation.ExceptionHandlerFunction;
 import com.github.vti.amcrm.api.DefaultObjectMapper;
 
 public class ServiceExceptionHandler implements ExceptionHandlerFunction {
-    private static Logger log = LogManager.getLogger(ServiceExceptionHandler.class);
+    private static final Logger log = LogManager.getLogger(ServiceExceptionHandler.class);
 
     @Override
     public HttpResponse handleException(

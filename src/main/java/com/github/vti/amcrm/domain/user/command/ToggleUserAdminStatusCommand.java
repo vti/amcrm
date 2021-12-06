@@ -10,9 +10,9 @@ import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.domain.user.exception.UserNotFoundException;
 
 public class ToggleUserAdminStatusCommand {
-    private UserRepository userRepository;
-    private ActorId actorId;
-    private UserId id;
+    private final UserRepository userRepository;
+    private final ActorId actorId;
+    private final UserId id;
 
     private ToggleUserAdminStatusCommand(Builder builder) {
         this.userRepository = Objects.requireNonNull(builder.userRepository);

@@ -10,9 +10,9 @@ import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.domain.customer.exception.CustomerNotFoundException;
 
 public class DeleteCustomerCommand {
-    private CustomerRepository customerRepository;
-    private ActorId actorId;
-    private CustomerId id;
+    private final CustomerRepository customerRepository;
+    private final ActorId actorId;
+    private final CustomerId id;
 
     private DeleteCustomerCommand(Builder builder) {
         this.customerRepository = Objects.requireNonNull(builder.customerRepository);

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.vti.amcrm.TestData;
 
-class PhotoTest {
+public class PhotoTest {
 
     @Test
     void resizesImage() throws Exception {

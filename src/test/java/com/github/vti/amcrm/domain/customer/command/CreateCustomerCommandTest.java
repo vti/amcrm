@@ -17,7 +17,7 @@ import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.infra.customer.MemoryCustomerRepository;
 
-class CreateCustomerCommandTest {
+public class CreateCustomerCommandTest {
 
     private CustomerRepository customerRepository;
 

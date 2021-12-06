@@ -25,7 +25,7 @@ public class MemoryCustomerRepository implements CustomerRepository {
         if (storage.containsKey(customer.getId())) {
             Customer existingCustomer = storage.get(customer.getId());
 
-            if (existingCustomer.getVersion() != customer.getVersion()) {
+            if (!existingCustomer.getVersion().equals(customer.getVersion())) {
                 throw new CustomerExistsException();
             }
         }

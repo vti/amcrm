@@ -10,12 +10,12 @@ import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.domain.customer.exception.CustomerNotFoundException;
 
 public class PatchCustomerCommand {
-    private CustomerRepository customerRepository;
-    private ActorId actorId;
-    private CustomerId id;
-    private String name;
-    private String surname;
-    private String photoLocation;
+    private final CustomerRepository customerRepository;
+    private final ActorId actorId;
+    private final CustomerId id;
+    private final String name;
+    private final String surname;
+    private final String photoLocation;
 
     private PatchCustomerCommand(Builder builder) {
         this.customerRepository = Objects.requireNonNull(builder.customerRepository);

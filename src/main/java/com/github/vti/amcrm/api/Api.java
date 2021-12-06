@@ -35,7 +35,7 @@ class Args {
 }
 
 public final class Api {
-    private static Logger log = LogManager.getLogger(Api.class);
+    private static final Logger log = LogManager.getLogger(Api.class);
 
     private final Config config;
     private Server server;
@@ -44,7 +44,7 @@ public final class Api {
         this.config = config;
     }
 
-    public void start() throws Exception {
+    public void start() {
         final RegistryFactory registryFactory =
                 new RegistryFactory(config.getStorage(), config.getBaseUrl().toString());
         final Path publicDir = Paths.get("public");
@@ -75,8 +75,7 @@ public final class Api {
             RepositoryRegistry repositoryRegistry,
             ViewRegistry viewRegistry,
             PhotoStorage photoStorage,
-            Path publicDir)
-            throws Exception {
+            Path publicDir) {
         return Server.builder()
                 .http(httpPort)
                 .decoratorUnder(
@@ -111,14 +110,14 @@ public final class Api {
         return configBuilder.loadFromEnv().build();
     }
 
-    public static void main(String[] argv) throws Exception {
+    public static void main(String[] argv) {
         Args args = new Args();
         JCommander jcommander = JCommander.newBuilder().addObject(args).build();
 
         try {
             jcommander.parse(argv);
         } catch (ParameterException e) {
-            System.err.println(String.format("Command line arguments error: %s", e.getMessage()));
+            System.err.printf("Command line arguments error: %s%n", e.getMessage());
 
             jcommander.setProgramName("amcrm");
             jcommander.usage();
@@ -146,12 +145,12 @@ public final class Api {
         api.start();
     }
 
-    public static enum Resource {
+    public enum Resource {
         PING("/ping"),
         CUSTOMERS("/customers"),
         USERS("/users");
 
-        private String value;
+        private final String value;
 
         Resource(String value) {
             this.value = value;

@@ -9,12 +9,12 @@ import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 
 public class CreateCustomerCommand {
-    private CustomerRepository customerRepository;
-    private ActorId actorId;
-    private CustomerId id;
-    private String name;
-    private String surname;
-    private String photoLocation;
+    private final CustomerRepository customerRepository;
+    private final ActorId actorId;
+    private final CustomerId id;
+    private final String name;
+    private final String surname;
+    private final String photoLocation;
 
     private CreateCustomerCommand(Builder builder) {
         this.customerRepository =

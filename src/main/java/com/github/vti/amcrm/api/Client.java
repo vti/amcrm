@@ -46,11 +46,7 @@ public class Client {
             return true;
         }
 
-        if (this.isAnonymous() && role == Role.ANONYMOUS) {
-            return true;
-        }
-
-        return false;
+        return this.isAnonymous() && role == Role.ANONYMOUS;
     }
 
     @Override

@@ -10,13 +10,13 @@ import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.customer.event.*;
 
 public class Customer extends Entity<Event<CustomerId>> {
-    private CustomerId id;
+    private final CustomerId id;
     private Long version;
     private String name;
     private String surname;
     private String photoLocation;
-    private Instant createdAt;
-    private ActorId createdBy;
+    private final Instant createdAt;
+    private final ActorId createdBy;
     private Instant updatedAt = null;
     private ActorId updatedBy = null;
     private Instant deletedAt = null;
@@ -128,7 +128,7 @@ public class Customer extends Entity<Event<CustomerId>> {
     }
 
     public boolean isDeleted() {
-        return this.deletedBy == null ? false : true;
+        return this.deletedBy != null;
     }
 
     @Override

@@ -20,9 +20,8 @@ import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.infra.TestDatabase;
 import com.github.vti.amcrm.infra.user.dto.UserSummary;
 
-class DatabaseUserViewTest {
+public class DatabaseUserViewTest {
 
-    private DataSource dataSource;
     private UserRepository userRepository;
     private DatabaseUserView userView;
 
@@ -30,14 +29,14 @@ class DatabaseUserViewTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        dataSource = TestDatabase.setupDatabase(tmpDir);
+        DataSource dataSource = TestDatabase.setupDatabase(tmpDir);
         userRepository = new DatabaseUserRepository(dataSource);
         userView = new DatabaseUserView(dataSource);
     }
 
     @Test
     void returnsEmptyDetailsResult() {
-        assertEquals(false, userView.load(TestData.getRandomId()).isPresent());
+        assertFalse(userView.load(TestData.getRandomId()).isPresent());
     }
 
     @Test
@@ -68,7 +67,7 @@ class DatabaseUserViewTest {
 
     @Test
     void returnsSummaryList() {
-        User user = createUser();
+        createUser();
 
         assertEquals(1, userView.find().size());
     }

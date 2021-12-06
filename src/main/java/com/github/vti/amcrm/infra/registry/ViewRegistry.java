@@ -4,7 +4,7 @@ import com.github.vti.amcrm.infra.customer.CustomerView;
 import com.github.vti.amcrm.infra.user.UserView;
 
 public interface ViewRegistry {
-    public CustomerView getCustomerView();
+    CustomerView getCustomerView();
 
-    public UserView getUserView();
+    UserView getUserView();
 }

@@ -10,8 +10,8 @@ import com.github.vti.amcrm.domain.user.UserId;
 
 public class MemoryStorage {
 
-    Map<CustomerId, Customer> customerStorage = new HashMap<>();
-    Map<UserId, User> userStorage = new HashMap<>();
+    final Map<CustomerId, Customer> customerStorage = new HashMap<>();
+    final Map<UserId, User> userStorage = new HashMap<>();
 
     public Map<CustomerId, Customer> getCustomerStorage() {
         return customerStorage;

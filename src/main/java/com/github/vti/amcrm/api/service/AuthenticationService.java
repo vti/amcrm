@@ -15,7 +15,7 @@ import com.github.vti.amcrm.api.Api;
 import com.github.vti.amcrm.api.Client;
 
 public class AuthenticationService extends SimpleDecoratingHttpService {
-    private static Logger log = LogManager.getLogger(Api.class);
+    private static final Logger log = LogManager.getLogger(Api.class);
 
     public AuthenticationService(HttpService delegate) {
         super(delegate);

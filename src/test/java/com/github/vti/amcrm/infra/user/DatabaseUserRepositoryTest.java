@@ -21,16 +21,15 @@ import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 import com.github.vti.amcrm.infra.TestDatabase;
 
-class DatabaseUserRepositoryTest {
+public class DatabaseUserRepositoryTest {
 
-    private DataSource dataSource;
     private UserRepository userRepository;
 
     @TempDir Path tmpDir;
 
     @BeforeEach
     void setUp() throws Exception {
-        dataSource = TestDatabase.setupDatabase(tmpDir);
+        DataSource dataSource = TestDatabase.setupDatabase(tmpDir);
         userRepository = new DatabaseUserRepository(dataSource);
     }
 
@@ -100,11 +99,7 @@ class DatabaseUserRepositoryTest {
 
         userRepository.store(user1);
 
-        assertThrows(
-                UserExistsException.class,
-                () -> {
-                    userRepository.store(user2);
-                });
+        assertThrows(UserExistsException.class, () -> userRepository.store(user2));
     }
 
     @Test
@@ -128,11 +123,7 @@ class DatabaseUserRepositoryTest {
         assertEquals(2, user1.getVersion());
         assertEquals(1, user2.getVersion());
 
-        assertThrows(
-                OptimisticLockException.class,
-                () -> {
-                    userRepository.store(user2);
-                });
+        assertThrows(OptimisticLockException.class, () -> userRepository.store(user2));
     }
 
     @Test

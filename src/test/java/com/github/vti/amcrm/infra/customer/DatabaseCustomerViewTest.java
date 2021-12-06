@@ -19,12 +19,11 @@ import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.infra.TestDatabase;
 import com.github.vti.amcrm.infra.customer.dto.CustomerSummary;
 
-class DatabaseCustomerViewTest {
-
+public class DatabaseCustomerViewTest {
     private DataSource dataSource;
     private CustomerRepository customerRepository;
     private DatabaseCustomerView customerView;
-    private String baseUrl = "http://localhost:4567";
+    private final String baseUrl = "http://localhost:4567";
 
     @TempDir Path tmpDir;
 
@@ -69,7 +68,7 @@ class DatabaseCustomerViewTest {
 
     @Test
     void returnsSummaryList() {
-        Customer customer = createCustomer();
+        createCustomer();
 
         assertEquals(1, customerView.find().size());
     }

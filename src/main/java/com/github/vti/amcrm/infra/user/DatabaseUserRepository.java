@@ -8,6 +8,7 @@ import static com.github.vti.amcrm.infra.DatabaseUtils.toLocalDateTime;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import org.jooq.impl.DSL;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vti.amcrm.api.DefaultObjectMapper;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
@@ -124,11 +126,11 @@ public class DatabaseUserRepository implements UserRepository {
                                     user.getCreatedBy().value(),
                                     toLocalDateTime(user.getUpdatedAt()),
                                     Optional.ofNullable(user.getUpdatedBy())
-                                            .map(v -> v.value())
+                                            .map(ActorId::value)
                                             .orElse(null),
                                     toLocalDateTime(user.getDeletedAt()),
                                     Optional.ofNullable(user.getDeletedBy())
-                                            .map(v -> v.value())
+                                            .map(ActorId::value)
                                             .orElse(null))
                             .execute();
                 } catch (DataAccessException e) {
@@ -151,13 +153,13 @@ public class DatabaseUserRepository implements UserRepository {
                                 .set(
                                         USER.UPDATED_BY,
                                         Optional.ofNullable(user.getUpdatedBy())
-                                                .map(v -> v.value())
+                                                .map(ActorId::value)
                                                 .orElse(null))
                                 .set(USER.DELETED_AT, toLocalDateTime(user.getDeletedAt()))
                                 .set(
                                         USER.DELETED_BY,
                                         Optional.ofNullable(user.getDeletedBy())
-                                                .map(v -> v.value())
+                                                .map(ActorId::value)
                                                 .orElse(null))
                                 .where(USER.ID.eq(user.getId().value()))
                                 .and(USER.VERSION.eq(user.getVersion()))
@@ -199,7 +201,7 @@ public class DatabaseUserRepository implements UserRepository {
                                     .map(
                                             p -> {
                                                 try {
-                                                    return String.valueOf(
+                                                    return Arrays.toString(
                                                             DefaultObjectMapper.get()
                                                                     .writeValueAsBytes(p));
                                                 } catch (JsonProcessingException e) {

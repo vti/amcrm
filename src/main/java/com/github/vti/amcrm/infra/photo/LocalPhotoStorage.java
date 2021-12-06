@@ -20,9 +20,7 @@ public class LocalPhotoStorage implements PhotoStorage {
     public String store(Photo photo) throws IOException {
         Path path =
                 Paths.get(
-                        rootDir.toString(),
-                        location.toString(),
-                        UUID.randomUUID().toString() + "-32x32.jpg");
+                        rootDir.toString(), location.toString(), UUID.randomUUID() + "-32x32.jpg");
         Files.createDirectories(path.getParent());
 
         // TODO: make this more efficient

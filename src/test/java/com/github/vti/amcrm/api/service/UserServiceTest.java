@@ -34,7 +34,7 @@ public class UserServiceTest {
 
     private UserService service;
     private Client client;
-    private String baseUrl = "http://localhost:4567";
+    private final String baseUrl = "http://localhost:4567";
 
     @TempDir Path tmpDir;
 

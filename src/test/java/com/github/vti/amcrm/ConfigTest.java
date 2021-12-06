@@ -3,6 +3,7 @@ package com.github.vti.amcrm;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 public class ConfigTest {
 
     @Test
-    void defaults() throws Exception {
+    void defaults() {
         Config config = Config.builder().build();
 
         assertEquals(Config.DEFAULT_BASE_URL, config.getBaseUrl().toString());
@@ -20,7 +21,7 @@ public class ConfigTest {
     }
 
     @Test
-    void defaultsWhenEnvEmpty() throws Exception {
+    void defaultsWhenEnvEmpty() {
         Config config = Config.builder().loadFromEnv().build();
 
         assertEquals(Config.DEFAULT_BASE_URL, config.getBaseUrl().toString());
@@ -29,7 +30,7 @@ public class ConfigTest {
     }
 
     @Test
-    void fromEnv() throws Exception {
+    void fromEnv() {
         Config.EnvReader envReader = mock(Config.EnvReader.class);
         when(envReader.getenv(Config.Env.AMCRM_BASE_URL.toString())).thenReturn("http://other.url");
         when(envReader.getenv(Config.Env.AMCRM_PORT.toString())).thenReturn("1234");
@@ -48,7 +49,7 @@ public class ConfigTest {
     }
 
     @Test
-    void loadsFromFile() throws Exception {
+    void loadsFromFile() throws FileNotFoundException {
         Config config = Config.builder().load(TestData.getConfigFile()).build();
 
         assertEquals("http://other.url", config.getBaseUrl().toString());
@@ -60,7 +61,7 @@ public class ConfigTest {
     }
 
     @Test
-    void manualConfiguration() throws Exception {
+    void manualConfiguration() {
         Map<String, String> options =
                 new HashMap<String, String>() {
                     {
@@ -80,7 +81,7 @@ public class ConfigTest {
     }
 
     @Test
-    void overwrites() throws Exception {
+    void overwrites() throws FileNotFoundException {
         Config config =
                 Config.builder()
                         .load(TestData.getConfigFile())
@@ -93,7 +94,7 @@ public class ConfigTest {
     }
 
     @Test
-    void updateDefaultBaseUrlPortWhenNotBaseUrlSpecified() throws Exception {
+    void updateDefaultBaseUrlPortWhenNotBaseUrlSpecified() {
         Config config = Config.builder().port(4321).build();
 
         assertEquals("http://localhost:4321", config.getBaseUrl().toString());

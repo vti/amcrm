@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.github.vti.amcrm.infra.user.dto.UserSummary;
 
 public interface UserView {
-    public abstract Optional<UserSummary> load(String id);
+    Optional<UserSummary> load(String id);
 
-    public abstract List<UserSummary> find();
+    List<UserSummary> find();
 }
