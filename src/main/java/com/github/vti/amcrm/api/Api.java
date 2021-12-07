@@ -51,6 +51,8 @@ public final class Api {
         final PhotoStorage photoStorage =
                 new LocalPhotoStorage(Paths.get(publicDir.toString()), Paths.get("customer"));
 
+        log.info("Loaded configuration: {}", config.toString());
+
         server =
                 newServer(
                         config.getPort(),

@@ -67,6 +67,11 @@ public class Config {
         return storage;
     }
 
+    @Override
+    public String toString() {
+        return "Config{" + "baseUrl=" + baseUrl + ", port=" + port + ", storage=" + storage + '}';
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -194,6 +199,11 @@ public class Config {
 
         public Map<String, String> getOptions() {
             return this.options;
+        }
+
+        @Override
+        public String toString() {
+            return "StorageConfig{" + "provider=" + provider + ", options=" + options + '}';
         }
     }
 
