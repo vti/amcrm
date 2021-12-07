@@ -25,6 +25,8 @@ import com.github.vti.amcrm.domain.customer.command.PatchCustomerCommand;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.domain.customer.exception.CustomerNotFoundException;
 import com.github.vti.amcrm.infra.customer.dto.CustomerSummary;
+import com.github.vti.amcrm.infra.pager.Page;
+import com.github.vti.amcrm.infra.pager.Pager;
 import com.github.vti.amcrm.infra.photo.Photo;
 import com.github.vti.amcrm.infra.photo.PhotoStorage;
 import com.github.vti.amcrm.infra.registry.ViewRegistry;
@@ -48,10 +50,13 @@ public class CustomerService extends BaseService {
     }
 
     @Get("")
-    public List<CustomerSummary> getCustomerList() {
-        List<CustomerSummary> customers = viewRegistry.getCustomerView().find();
+    public List<CustomerSummary> getCustomerList(
+            @Param("limit") Optional<Integer> limit, @Param("cursor") Optional<Integer> offset) {
+        Pager pager = new Pager(limit, offset);
 
-        return customers;
+        Page<CustomerSummary> page = viewRegistry.getCustomerView().find(pager);
+
+        return page.getItems();
     }
 
     @Get("/{id}")

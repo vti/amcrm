@@ -2,13 +2,19 @@ package com.github.vti.amcrm.functional.resource;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import io.restassured.response.Response;
 
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.api.Api;
@@ -21,9 +27,11 @@ public class UserResourceTest {
 
     private Api api;
 
+    @TempDir Path tmpDir;
+
     @BeforeEach
     void setUp() {
-        api = TestFunctional.buildApi();
+        api = TestFunctional.buildApi(tmpDir);
 
         api.start();
     }
@@ -100,6 +108,29 @@ public class UserResourceTest {
                 .statusCode(200)
                 .assertThat()
                 .body(matchesJsonSchemaInClasspath(TestFunctional.Model.USER_LIST.toString()));
+    }
+
+    @Test
+    void listsUsersLimited() throws JsonProcessingException {
+        TestFunctional.createUser();
+        TestFunctional.createUser();
+        TestFunctional.createUser();
+
+        Response response =
+                given().headers(TestFunctional.getAuthenticatedAdminHeaders())
+                        .when()
+                        .queryParam("limit", "2")
+                        .get(Api.Resource.USERS.toString())
+                        .then()
+                        .statusCode(200)
+                        .assertThat()
+                        .body(
+                                matchesJsonSchemaInClasspath(
+                                        TestFunctional.Model.USER_LIST.toString()))
+                        .extract()
+                        .response();
+
+        assertEquals(2, response.jsonPath().getList("$").size());
     }
 
     @Test

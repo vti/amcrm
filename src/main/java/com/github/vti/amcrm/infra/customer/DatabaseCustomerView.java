@@ -14,6 +14,8 @@ import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import com.github.vti.amcrm.infra.customer.dto.CustomerSummary;
+import com.github.vti.amcrm.infra.pager.Page;
+import com.github.vti.amcrm.infra.pager.Pager;
 
 public class DatabaseCustomerView implements CustomerView {
     private final DataSource dataSource;
@@ -59,7 +61,7 @@ public class DatabaseCustomerView implements CustomerView {
     }
 
     @Override
-    public List<CustomerSummary> find() {
+    public Page<CustomerSummary> find(Pager pager) {
         List<CustomerSummary> customers = new ArrayList<>();
 
         try (Connection connection = this.dataSource.getConnection()) {
@@ -73,7 +75,9 @@ public class DatabaseCustomerView implements CustomerView {
                                     CUSTOMER.PHOTO_LOCATION)
                             .from(CUSTOMER)
                             .where(CUSTOMER.DELETED_BY.isNull())
-                            .limit(100)
+                            .orderBy(CUSTOMER.CREATED_AT.desc())
+                            .limit(pager.getLimit())
+                            .offset(pager.getOffset())
                             .fetch();
 
             for (Record4<String, String, String, String> record : result) {
@@ -89,7 +93,9 @@ public class DatabaseCustomerView implements CustomerView {
                 customers.add(customer);
             }
 
-            return customers;
+            Pager newPager = new Pager(pager.getLimit(), pager.getOffset() + pager.getLimit());
+
+            return new Page(customers, newPager);
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching", e);
         }

@@ -23,6 +23,8 @@ import com.github.vti.amcrm.domain.user.command.DeleteUserCommand;
 import com.github.vti.amcrm.domain.user.command.ToggleUserAdminStatusCommand;
 import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.domain.user.exception.UserNotFoundException;
+import com.github.vti.amcrm.infra.pager.Page;
+import com.github.vti.amcrm.infra.pager.Pager;
 import com.github.vti.amcrm.infra.registry.ViewRegistry;
 import com.github.vti.amcrm.infra.user.dto.UserSummary;
 
@@ -40,10 +42,13 @@ public class UserService extends BaseService {
     }
 
     @Get("")
-    public List<UserSummary> getUserList() {
-        List<UserSummary> users = this.viewRegistry.getUserView().find();
+    public List<UserSummary> getUserList(
+            @Param("limit") Optional<Integer> limit, @Param("offset") Optional<Integer> offset) {
+        Pager pager = new Pager(limit, offset);
 
-        return users;
+        Page<UserSummary> page = this.viewRegistry.getUserView().find(pager);
+
+        return page.getItems();
     }
 
     @Get("/{id}")

@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class TestFunctional {
         }
     }
 
-    public static Api buildApi() {
+    public static Api buildApi(Path tmpDir) {
         Config config = Config.builder().port(TestFunctional.findOpenPort()).build();
 
         String baseUrl = config.getBaseUrl().toString();

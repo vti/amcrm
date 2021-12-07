@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import javax.sql.DataSource;
 
@@ -70,7 +71,7 @@ public class UserServiceTest {
 
     @Test
     void returnsEmptyList() {
-        List<UserSummary> users = service.getUserList();
+        List<UserSummary> users = service.getUserList(Optional.empty(), Optional.empty());
 
         assertEquals(0, users.size());
     }
@@ -86,9 +87,25 @@ public class UserServiceTest {
         CreateUserRequest request3 = TestFactory.newCreateUserRequest();
         service.createUser(request3);
 
-        List<UserSummary> users = service.getUserList();
+        List<UserSummary> users = service.getUserList(Optional.empty(), Optional.empty());
 
         assertEquals(3, users.size());
+    }
+
+    @Test
+    void returnsListLimited() {
+        CreateUserRequest request1 = TestFactory.newCreateUserRequest();
+        service.createUser(request1);
+
+        CreateUserRequest request2 = TestFactory.newCreateUserRequest();
+        service.createUser(request2);
+
+        CreateUserRequest request3 = TestFactory.newCreateUserRequest();
+        service.createUser(request3);
+
+        List<UserSummary> users = service.getUserList(Optional.of(2), Optional.empty());
+
+        assertEquals(2, users.size());
     }
 
     @Test

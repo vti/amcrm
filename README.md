@@ -48,6 +48,11 @@ Content-Type: application/json
 
 ### Authentication
 
+### Pagination
+
+It is possible to pass a limit and an offset for paginating the list results, which is not the best choice of course,
+something like a proper key set would be much more efficient, but it can be easily change when the need arises.
+
 ### Resources
 
 #### Customers

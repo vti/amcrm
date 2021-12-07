@@ -18,6 +18,8 @@ import com.github.vti.amcrm.domain.customer.CustomerRepository;
 import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.infra.TestDatabase;
 import com.github.vti.amcrm.infra.customer.dto.CustomerSummary;
+import com.github.vti.amcrm.infra.pager.Page;
+import com.github.vti.amcrm.infra.pager.Pager;
 
 public class DatabaseCustomerViewTest {
     private DataSource dataSource;
@@ -63,14 +65,39 @@ public class DatabaseCustomerViewTest {
 
     @Test
     void returnsEmptySummaryList() {
-        assertEquals(0, customerView.find().size());
+        assertEquals(0, customerView.find(new Pager()).getItems().size());
     }
 
     @Test
     void returnsSummaryList() {
         createCustomer();
 
-        assertEquals(1, customerView.find().size());
+        assertEquals(1, customerView.find(new Pager()).getItems().size());
+    }
+
+    @Test
+    void returnsSummaryListPaginated() {
+        createCustomer();
+        createCustomer();
+        createCustomer();
+
+        Page<CustomerSummary> page1 = customerView.find(new Pager(2));
+
+        assertEquals(2, page1.getPager().getLimit());
+        assertEquals(2, page1.getPager().getOffset());
+        assertEquals(2, page1.getItems().size());
+
+        Page<CustomerSummary> page2 = customerView.find(page1.getPager());
+
+        assertEquals(2, page2.getPager().getLimit());
+        assertEquals(4, page2.getPager().getOffset());
+        assertEquals(1, page2.getItems().size());
+
+        Page<CustomerSummary> page3 = customerView.find(page2.getPager());
+
+        assertEquals(2, page3.getPager().getLimit());
+        assertEquals(6, page3.getPager().getOffset());
+        assertEquals(0, page3.getItems().size());
     }
 
     private Customer createCustomer() {

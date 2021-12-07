@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
 import com.github.vti.amcrm.infra.customer.dto.CustomerSummary;
+import com.github.vti.amcrm.infra.pager.Page;
+import com.github.vti.amcrm.infra.pager.Pager;
 
 public class MemoryCustomerView implements CustomerView {
     private final Map<CustomerId, Customer> storage;
@@ -35,17 +37,25 @@ public class MemoryCustomerView implements CustomerView {
     }
 
     @Override
-    public List<CustomerSummary> find() {
-        return storage.values().stream()
-                .map(
-                        customer ->
-                                CustomerSummary.builder()
-                                        .baseUrl(baseUrl)
-                                        .id(customer.getId().value())
-                                        .name(customer.getName())
-                                        .surname(customer.getSurname())
-                                        .photoLocation(customer.getPhotoLocation().orElse(null))
-                                        .build())
-                .collect(Collectors.toList());
+    public Page<CustomerSummary> find(Pager pager) {
+        List<CustomerSummary> customers =
+                storage.values().stream()
+                        .map(
+                                customer ->
+                                        CustomerSummary.builder()
+                                                .baseUrl(baseUrl)
+                                                .id(customer.getId().value())
+                                                .name(customer.getName())
+                                                .surname(customer.getSurname())
+                                                .photoLocation(
+                                                        customer.getPhotoLocation().orElse(null))
+                                                .build())
+                        .collect(Collectors.toList());
+
+        if (customers.size() > 0) {
+            customers = customers.subList(0, Math.min(customers.size(), pager.getLimit()));
+        }
+
+        return new Page(customers, new Pager(pager.getLimit()));
     }
 }

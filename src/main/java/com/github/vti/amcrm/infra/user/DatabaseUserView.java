@@ -13,6 +13,8 @@ import javax.sql.DataSource;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 
+import com.github.vti.amcrm.infra.pager.Page;
+import com.github.vti.amcrm.infra.pager.Pager;
 import com.github.vti.amcrm.infra.user.dto.UserSummary;
 
 public class DatabaseUserView implements UserView {
@@ -51,7 +53,7 @@ public class DatabaseUserView implements UserView {
     }
 
     @Override
-    public List<UserSummary> find() {
+    public Page<UserSummary> find(Pager pager) {
         List<UserSummary> users = new ArrayList<>();
 
         try (Connection connection = this.dataSource.getConnection()) {
@@ -61,7 +63,9 @@ public class DatabaseUserView implements UserView {
                     create.select(USER.ID, USER.IS_ADMIN, USER.NAME)
                             .from(USER)
                             .where(USER.DELETED_BY.isNull())
-                            .limit(100)
+                            .orderBy(USER.CREATED_AT.desc())
+                            .limit(pager.getLimit())
+                            .offset(pager.getOffset())
                             .fetch();
 
             for (Record3<String, Boolean, String> record : result) {
@@ -75,7 +79,9 @@ public class DatabaseUserView implements UserView {
                 users.add(user);
             }
 
-            return users;
+            Pager newPager = new Pager(pager.getLimit(), pager.getOffset() + pager.getLimit());
+
+            return new Page(users, newPager);
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching", e);
         }
