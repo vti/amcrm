@@ -5,8 +5,10 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -14,6 +16,7 @@ import com.beust.jcommander.ParameterException;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.docs.DocService;
 import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.logging.AccessLogWriter;
 
 import com.github.vti.amcrm.Config;
 import com.github.vti.amcrm.api.service.AuthenticationService;
@@ -32,10 +35,15 @@ class Args {
 
     @Parameter(names = "--port", description = "Server port")
     public Integer port = null;
+
+    @Parameter(names = "--debug", description = "Debug level")
+    public Boolean debug = null;
 }
 
 public final class Api {
     private static final Logger log = LogManager.getLogger(Api.class);
+    private static final String ACCESS_LOG_FORMAT =
+            "%a %l %u [%t] \"%r\" %>s %b \"%{User-agent}i\"";
 
     private final Config config;
     private Server server;
@@ -83,6 +91,7 @@ public final class Api {
                 .decoratorUnder(
                         "/",
                         (delegate, ctx, req) -> new AuthenticationService(delegate).serve(ctx, req))
+                .accessLogWriter(AccessLogWriter.custom(ACCESS_LOG_FORMAT), true)
                 .annotatedService(Resource.PING.value(), new PingService())
                 .annotatedService(
                         Resource.CUSTOMERS.value(),
@@ -125,6 +134,10 @@ public final class Api {
             jcommander.usage();
 
             System.exit(1);
+        }
+
+        if (args.debug != null && args.debug) {
+            Configurator.setRootLevel(Level.DEBUG);
         }
 
         System.getProperties().setProperty("org.jooq.no-logo", "true");

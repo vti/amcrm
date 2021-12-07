@@ -2,6 +2,7 @@ package com.github.vti.amcrm.api.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
@@ -37,6 +38,8 @@ public class AuthenticationService extends SimpleDecoratingHttpService {
         ctx.setAttr(AttributeKey.valueOf("client"), client);
 
         log.info("Authenticating user: {}", client);
+
+        ThreadContext.put("client", client.toCompactString());
 
         return unwrap().serve(ctx, req);
     }

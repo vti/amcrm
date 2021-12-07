@@ -14,6 +14,8 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jooq.*;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
@@ -30,6 +32,8 @@ import com.github.vti.amcrm.domain.customer.exception.CustomerExistsException;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 
 public class DatabaseCustomerRepository implements CustomerRepository {
+    private static final Logger log = LogManager.getLogger(DatabaseCustomerRepository.class);
+
     private final DataSource dataSource;
 
     public DatabaseCustomerRepository(DataSource dataSource) {
@@ -220,6 +224,8 @@ public class DatabaseCustomerRepository implements CustomerRepository {
                                             })
                                     .orElse(null))
                     .execute();
+
+            log.info("Event: name={} actor={}", event.getName(), event.getActorId());
         }
     }
 }

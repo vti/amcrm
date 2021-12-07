@@ -25,6 +25,10 @@ public class Client {
         return id;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
     public boolean isAnonymous() {
         return this.role == Role.ANONYMOUS;
     }
@@ -52,6 +56,14 @@ public class Client {
     @Override
     public String toString() {
         return "Client{" + "role=" + role + ", id='" + id + '\'' + '}';
+    }
+
+    public String toCompactString() {
+        if (isAnonymous()) {
+            return String.format("%", role);
+        }
+
+        return String.format("%s/%s", role, id);
     }
 
     public enum Role {
