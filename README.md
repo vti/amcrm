@@ -186,12 +186,17 @@ Application supports two storages:
 1. Build image
 
    ```bash
+   $ bash build-docker.sh
+   # or
    $ docker build . -t amcrm
    ```
 2. Run container
 
+   The `public` directory is where the customers' photos will be uploaded. When not mapped they will be gone when the
+   container stops.
+
    ```bash
-   $ docker run --rm amcrm -v $PWD:
+   $ docker run --rm -p 4567:4567 -v /opt/amcrm/public:$PWD/public amcrm
    ```
 
 ## Contributing
