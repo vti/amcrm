@@ -129,7 +129,18 @@ Application supports two storages:
 - in-memory (not thread-safe, primarily for testing)
 - database (transactional optimistic locking)
 
+### Photo storage
+
+There is a default local filesystem photo storage included, but it can be easily extended to use some external file
+storage like AWS S3 or similar. In case of a local storage the path is saved in the domain storage and the base url is
+automatically prepended during the runtime.
+
+By default photos are saved into the `public/` directory.
+
 ### Local environment
+
+There is a [maven wrapper](https://maven.apache.org/wrapper/) available, so you don't have to rely on a system maven to
+be present or to have a specific version. Instead of running `mvn` run `./mvnw`.
 
 1. Build
 
@@ -185,12 +196,16 @@ Application supports two storages:
 
 1. Build image
 
+Building an image is a multistage process that
+utilizes [buildkit](https://docs.docker.com/develop/develop-images/build_enhancements/) and maven repository caching to
+speed things up.
+
    ```bash
    $ bash build-docker.sh
    # or
-   $ docker build . -t amcrm
+   $ DOCKER_BUILDKIT=1 docker build . -t amcrm
    ```
-2. Run container
+4. Run container
 
    The `public` directory is where the customers' photos will be uploaded. When not mapped they will be gone when the
    container stops.

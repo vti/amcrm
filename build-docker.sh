@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build . -t amcrm
+DOCKER_BUILDKIT=1 docker build . -t amcrm
