@@ -22,5 +22,9 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
+    - name: Resolve dependnecies
+      run: mvn -B dependency:resolve --file pom.xml
+    - name: Install json schema validator
+      run: mvn -f pom.xml -B install:install-file -Dfile=contrib/json-schema-validator-1.0.64.jar -DgroupId=com.networknt -DartifactId=json-schema-validator -Dversion=1.0.64 -Dpackaging=jar
     - name: Build with Maven
-      run: mvn -B package --file pom.xml -D'groups=!functional'
+      run: mvn -B package --file pom.xml
