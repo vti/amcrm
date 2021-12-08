@@ -61,8 +61,8 @@ public class CreateUserCommand {
             return this;
         }
 
-        public Builder isAdmin(Boolean isAdmin) {
-            this.admin = isAdmin;
+        public Builder admin(Boolean admin) {
+            this.admin = admin;
             return this;
         }
 

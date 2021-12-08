@@ -1,10 +1,15 @@
 package com.github.vti.amcrm;
 
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
+
 import com.github.vti.amcrm.api.service.request.CreateCustomerRequest;
 import com.github.vti.amcrm.api.service.request.CreateUserRequest;
 import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.customer.Customer;
 import com.github.vti.amcrm.domain.customer.CustomerId;
+import com.github.vti.amcrm.domain.session.Session;
+import com.github.vti.amcrm.domain.session.SessionId;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 
@@ -57,5 +62,21 @@ public class TestFactory {
                 TestData.getRandomName(),
                 TestData.getRandomSurname(),
                 photo);
+    }
+
+    public static Session newSession(ActorId actorId) {
+        return Session.builder()
+                .id(SessionId.of(TestData.getRandomId()))
+                .actorId(actorId)
+                .expiresAt(Instant.now().plusSeconds(TimeUnit.HOURS.toSeconds(1)))
+                .build();
+    }
+
+    public static Session newExpiredSession(ActorId actorId) {
+        return Session.builder()
+                .id(SessionId.of(TestData.getRandomId()))
+                .actorId(actorId)
+                .expiresAt(Instant.now().minusSeconds(TimeUnit.HOURS.toSeconds(1)))
+                .build();
     }
 }

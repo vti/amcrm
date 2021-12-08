@@ -193,6 +193,23 @@ public class DatabaseCustomerRepository implements CustomerRepository {
         }
     }
 
+    @Override
+    public boolean isEmpty() {
+        try (Connection connection = dataSource.getConnection()) {
+            DSLContext create = DSL.using(connection, SQLDialect.POSTGRES);
+
+            Record1<String> record = create.select(CUSTOMER.ID).from(CUSTOMER).fetchOne();
+
+            if (record == null) {
+                return true;
+            }
+
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException("Empty check failed", e);
+        }
+    }
+
     public static void storeEvents(Connection connection, List<Event<CustomerId>> events) {
         DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
 

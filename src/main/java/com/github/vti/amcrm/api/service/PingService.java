@@ -18,7 +18,7 @@ import com.github.vti.amcrm.api.service.request.PingRequest;
 public class PingService {
     public PingService() {}
 
-    @Post("/")
+    @Post("")
     public Object ping(PingRequest request) {
         Map<String, Object> map = new HashMap<>();
 

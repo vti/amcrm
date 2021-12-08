@@ -34,7 +34,7 @@ public class AccessService extends SimpleDecoratingHttpService {
             return HttpResponse.of(HttpStatus.UNAUTHORIZED);
         }
 
-        if (!client.isInRole(this.role)) {
+        if (!client.isInRole(role)) {
             log.warn("Client not authorized");
             return HttpResponse.of(HttpStatus.UNAUTHORIZED);
         }

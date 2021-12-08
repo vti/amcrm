@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +27,14 @@ import com.github.vti.amcrm.api.service.AuthenticationService;
 import com.github.vti.amcrm.api.service.CustomerService;
 import com.github.vti.amcrm.api.service.PingService;
 import com.github.vti.amcrm.api.service.UserService;
+import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.RepositoryRegistry;
+import com.github.vti.amcrm.domain.session.Session;
+import com.github.vti.amcrm.domain.session.SessionId;
+import com.github.vti.amcrm.domain.user.UserId;
+import com.github.vti.amcrm.domain.user.UserRepository;
+import com.github.vti.amcrm.domain.user.command.CreateUserCommand;
+import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.infra.photo.LocalPhotoStorage;
 import com.github.vti.amcrm.infra.photo.PhotoStorage;
 import com.github.vti.amcrm.infra.registry.RegistryFactory;
@@ -48,19 +59,65 @@ public final class Api {
     private final Config config;
     private Server server;
 
+    private final RegistryFactory registryFactory;
+    private final Path publicDir;
+    private final PhotoStorage photoStorage;
+
     public Api(Config config) {
         this.config = config;
-    }
-
-    public void start() {
-        final RegistryFactory registryFactory =
-                new RegistryFactory(config.getStorage(), config.getBaseUrl().toString());
-        final Path publicDir = Paths.get("public");
-        final PhotoStorage photoStorage =
-                new LocalPhotoStorage(Paths.get(publicDir.toString()), Paths.get("customer"));
 
         log.info("Loaded configuration: {}", config.toString());
 
+        registryFactory = new RegistryFactory(config.getStorage(), config.getBaseUrl().toString());
+        publicDir = Paths.get("public");
+        photoStorage =
+                new LocalPhotoStorage(Paths.get(publicDir.toString()), Paths.get("customer"));
+    }
+
+    public RegistryFactory getRegistryFactory() {
+        return registryFactory;
+    }
+
+    public Optional<SessionId> makeSureAtLeastAdminExists() {
+        UserRepository userRepository = registryFactory.getRepositoryRegistry().getUserRepository();
+
+        if (userRepository.isEmpty()) {
+            UserId userId = UserId.of(UUID.randomUUID().toString());
+
+            CreateUserCommand command =
+                    CreateUserCommand.builder()
+                            .userRepository(userRepository)
+                            .actorId(ActorId.of(UUID.randomUUID().toString()))
+                            .id(userId)
+                            .name("admin")
+                            .admin(true)
+                            .build();
+
+            try {
+                command.execute();
+            } catch (UserExistsException e) {
+                throw new RuntimeException("Failed to create the first admin", e);
+            }
+
+            log.info("Created first admin: {}", userId);
+
+            Session session =
+                    Session.builder()
+                            .id(SessionId.of(UUID.randomUUID().toString()))
+                            .actorId(ActorId.of(userId.value()))
+                            .expiresAt(Instant.now().plusSeconds(TimeUnit.HOURS.toSeconds(1)))
+                            .build();
+            registryFactory.getRepositoryRegistry().getSessionRepository().store(session);
+
+            log.info("Created admin session: {}", session);
+
+            return Optional.of(session.getId());
+        }
+
+        return Optional.empty();
+    }
+
+    public void start() {
         server =
                 newServer(
                         config.getPort(),
@@ -90,7 +147,9 @@ public final class Api {
                 .http(httpPort)
                 .decoratorUnder(
                         "/",
-                        (delegate, ctx, req) -> new AuthenticationService(delegate).serve(ctx, req))
+                        (delegate, ctx, req) ->
+                                new AuthenticationService(delegate, registryFactory)
+                                        .serve(ctx, req))
                 .accessLogWriter(AccessLogWriter.custom(ACCESS_LOG_FORMAT), true)
                 .annotatedService(Resource.PING.value(), new PingService())
                 .annotatedService(
@@ -156,6 +215,8 @@ public final class Api {
 
                                     log.info("Server stopped");
                                 }));
+
+        api.makeSureAtLeastAdminExists();
 
         api.start();
     }

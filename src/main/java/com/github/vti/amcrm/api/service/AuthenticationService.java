@@ -12,32 +12,34 @@ import com.linecorp.armeria.server.SimpleDecoratingHttpService;
 
 import io.netty.util.AttributeKey;
 
-import com.github.vti.amcrm.api.Api;
+import com.github.vti.amcrm.api.Authentication;
 import com.github.vti.amcrm.api.Client;
+import com.github.vti.amcrm.infra.registry.RegistryFactory;
 
 public class AuthenticationService extends SimpleDecoratingHttpService {
-    private static final Logger log = LogManager.getLogger(Api.class);
+    private static final Logger log = LogManager.getLogger(AuthenticationService.class);
 
-    public AuthenticationService(HttpService delegate) {
+    private final RegistryFactory registryFactory;
+
+    public AuthenticationService(HttpService delegate, RegistryFactory registryFactory) {
         super(delegate);
+
+        this.registryFactory = registryFactory;
     }
 
     @Override
     public HttpResponse serve(ServiceRequestContext ctx, HttpRequest req) throws Exception {
-        String authorization = req.headers().get("Authorization");
+        String header = req.headers().get("Authorization");
 
-        Client client = Client.anonymous();
-        if (authorization != null && !authorization.isEmpty()) {
-            if (authorization.equals("user")) {
-                client = Client.user("2");
-            } else if (authorization.equals("admin")) {
-                client = Client.admin("1");
-            }
-        }
+        Client client =
+                new Authentication(
+                                registryFactory.getRepositoryRegistry().getSessionRepository(),
+                                registryFactory.getRepositoryRegistry().getUserRepository())
+                        .authenticate(header);
+
+        log.info("Authenticated user: {}", client);
 
         ctx.setAttr(AttributeKey.valueOf("client"), client);
-
-        log.info("Authenticating user: {}", client);
 
         ThreadContext.put("client", client.toCompactString());
 

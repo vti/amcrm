@@ -10,9 +10,11 @@ import org.jooq.impl.Internal;
 
 import com.github.vti.amcrm.db.tables.Customer;
 import com.github.vti.amcrm.db.tables.Event;
+import com.github.vti.amcrm.db.tables.Session;
 import com.github.vti.amcrm.db.tables.User;
 import com.github.vti.amcrm.db.tables.records.CustomerRecord;
 import com.github.vti.amcrm.db.tables.records.EventRecord;
+import com.github.vti.amcrm.db.tables.records.SessionRecord;
 import com.github.vti.amcrm.db.tables.records.UserRecord;
 
 /** A class modelling foreign key relationships and constraints of tables in the default schema. */
@@ -32,6 +34,12 @@ public class Keys {
     public static final UniqueKey<EventRecord> PK_EVENT =
             Internal.createUniqueKey(
                     Event.EVENT, DSL.name("pk_event"), new TableField[] {Event.EVENT.ID}, true);
+    public static final UniqueKey<SessionRecord> PK_SESSION =
+            Internal.createUniqueKey(
+                    Session.SESSION,
+                    DSL.name("pk_session"),
+                    new TableField[] {Session.SESSION.ID},
+                    true);
     public static final UniqueKey<UserRecord> PK_USER =
             Internal.createUniqueKey(
                     User.USER, DSL.name("pk_user"), new TableField[] {User.USER.ID}, true);

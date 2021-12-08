@@ -34,4 +34,9 @@ public class MemoryCustomerRepository implements CustomerRepository {
 
         customer.incrementVersion();
     }
+
+    @Override
+    public boolean isEmpty() {
+        return storage.isEmpty();
+    }
 }

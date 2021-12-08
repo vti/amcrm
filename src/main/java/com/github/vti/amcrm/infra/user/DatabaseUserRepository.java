@@ -1,7 +1,6 @@
 package com.github.vti.amcrm.infra.user;
 
-import static com.github.vti.amcrm.db.Tables.EVENT;
-import static com.github.vti.amcrm.db.Tables.USER;
+import static com.github.vti.amcrm.db.Tables.*;
 import static com.github.vti.amcrm.infra.DatabaseUtils.toActorId;
 import static com.github.vti.amcrm.infra.DatabaseUtils.toLocalDateTime;
 
@@ -16,6 +15,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
+import org.jooq.Record1;
 import org.jooq.Record10;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
@@ -178,6 +178,23 @@ public class DatabaseUserRepository implements UserRepository {
             user.clearEvents();
         } catch (SQLException e) {
             throw new RuntimeException("Error storing", e);
+        }
+    }
+
+    @Override
+    public boolean isEmpty() {
+        try (Connection connection = dataSource.getConnection()) {
+            DSLContext create = DSL.using(connection, SQLDialect.POSTGRES);
+
+            Record1<String> record = create.select(USER.ID).from(USER).fetchOne();
+
+            if (record == null) {
+                return true;
+            }
+
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException("Empty check failed", e);
         }
     }
 

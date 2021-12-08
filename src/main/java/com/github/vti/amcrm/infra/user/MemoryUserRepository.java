@@ -21,17 +21,22 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void store(User customer) throws UserExistsException {
-        if (storage.containsKey(customer.getId())) {
-            User existingUser = storage.get(customer.getId());
+    public void store(User user) throws UserExistsException {
+        if (storage.containsKey(user.getId())) {
+            User existingUser = storage.get(user.getId());
 
-            if (!existingUser.getVersion().equals(customer.getVersion())) {
+            if (!existingUser.getVersion().equals(user.getVersion())) {
                 throw new UserExistsException();
             }
         }
 
-        storage.put(customer.getId(), customer);
+        storage.put(user.getId(), user);
 
-        customer.incrementVersion();
+        user.incrementVersion();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return storage.isEmpty();
     }
 }

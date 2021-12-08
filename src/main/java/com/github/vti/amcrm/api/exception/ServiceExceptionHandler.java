@@ -20,35 +20,41 @@ public class ServiceExceptionHandler implements ExceptionHandlerFunction {
     public HttpResponse handleException(
             ServiceRequestContext ctx, HttpRequest req, Throwable cause) {
         if (cause instanceof JsonSchemaValidationException) {
-            JsonSchemaValidationException e = (JsonSchemaValidationException) cause;
+            JsonSchemaValidationException eCause = (JsonSchemaValidationException) cause;
 
             try {
-                String asJson = DefaultObjectMapper.get().writeValueAsString(e.toMap());
+                String asJson = DefaultObjectMapper.get().writeValueAsString(eCause.toMap());
 
                 return HttpResponse.of(
                         HttpStatus.UNPROCESSABLE_ENTITY, MediaType.JSON_UTF_8, asJson);
-            } catch (JsonProcessingException ex) {
-                throw new RuntimeException();
+            } catch (JsonProcessingException e) {
+                log.error("Json serialization failed", e);
+
+                throw new RuntimeException(e);
             }
         } else if (cause instanceof NotFoundException) {
-            NotFoundException e = (NotFoundException) cause;
+            NotFoundException eCause = (NotFoundException) cause;
 
             try {
-                String asJson = DefaultObjectMapper.get().writeValueAsString(e.toMap());
+                String asJson = DefaultObjectMapper.get().writeValueAsString(eCause.toMap());
 
                 return HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, asJson);
-            } catch (JsonProcessingException ex) {
-                throw new RuntimeException();
+            } catch (JsonProcessingException e) {
+                log.error("Json serialization failed", e);
+
+                throw new RuntimeException(e);
             }
         } else if (cause instanceof ConflictException) {
-            ConflictException e = (ConflictException) cause;
+            ConflictException eCause = (ConflictException) cause;
 
             try {
-                String asJson = DefaultObjectMapper.get().writeValueAsString(e.toMap());
+                String asJson = DefaultObjectMapper.get().writeValueAsString(eCause.toMap());
 
                 return HttpResponse.of(HttpStatus.CONFLICT, MediaType.JSON_UTF_8, asJson);
-            } catch (JsonProcessingException ex) {
-                throw new RuntimeException();
+            } catch (JsonProcessingException e) {
+                log.error("Json serialization failed", e);
+
+                throw new RuntimeException(e);
             }
         }
 

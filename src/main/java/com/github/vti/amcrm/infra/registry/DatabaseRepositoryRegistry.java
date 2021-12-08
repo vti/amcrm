@@ -6,8 +6,10 @@ import javax.sql.DataSource;
 
 import com.github.vti.amcrm.domain.RepositoryRegistry;
 import com.github.vti.amcrm.domain.customer.CustomerRepository;
+import com.github.vti.amcrm.domain.session.SessionRepository;
 import com.github.vti.amcrm.domain.user.UserRepository;
 import com.github.vti.amcrm.infra.customer.DatabaseCustomerRepository;
+import com.github.vti.amcrm.infra.session.DatabaseSessionRepository;
 import com.github.vti.amcrm.infra.user.DatabaseUserRepository;
 
 public class DatabaseRepositoryRegistry implements RepositoryRegistry {
@@ -27,5 +29,10 @@ public class DatabaseRepositoryRegistry implements RepositoryRegistry {
     @Override
     public UserRepository getUserRepository() {
         return new DatabaseUserRepository(dataSource);
+    }
+
+    @Override
+    public SessionRepository getSessionRepository() {
+        return new DatabaseSessionRepository(dataSource);
     }
 }

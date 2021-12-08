@@ -60,7 +60,7 @@ public class Client {
 
     public String toCompactString() {
         if (isAnonymous()) {
-            return String.format("%", role);
+            return String.format("%s", role);
         }
 
         return String.format("%s/%s", role, id);

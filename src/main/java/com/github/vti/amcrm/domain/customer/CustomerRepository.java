@@ -8,4 +8,6 @@ public interface CustomerRepository {
     Optional<Customer> load(CustomerId id);
 
     void store(Customer customer) throws CustomerExistsException;
+
+    boolean isEmpty();
 }

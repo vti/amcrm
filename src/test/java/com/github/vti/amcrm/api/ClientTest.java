@@ -27,4 +27,9 @@ public class ClientTest {
     void testToString() {
         assertNotNull(Client.anonymous().toString());
     }
+
+    @Test
+    void testToCompactString() {
+        assertNotNull(Client.anonymous().toCompactString());
+    }
 }

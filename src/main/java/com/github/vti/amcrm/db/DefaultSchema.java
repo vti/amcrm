@@ -12,6 +12,7 @@ import org.jooq.impl.SchemaImpl;
 
 import com.github.vti.amcrm.db.tables.Customer;
 import com.github.vti.amcrm.db.tables.Event;
+import com.github.vti.amcrm.db.tables.Session;
 import com.github.vti.amcrm.db.tables.SqliteSequence;
 import com.github.vti.amcrm.db.tables.User;
 
@@ -29,6 +30,9 @@ public class DefaultSchema extends SchemaImpl {
 
     /** The table <code>event</code>. */
     public final Event EVENT = Event.EVENT;
+
+    /** The table <code>session</code>. */
+    public final Session SESSION = Session.SESSION;
 
     /** The table <code>sqlite_sequence</code>. */
     public final SqliteSequence SQLITE_SEQUENCE = SqliteSequence.SQLITE_SEQUENCE;
@@ -49,6 +53,10 @@ public class DefaultSchema extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.<Table<?>>asList(
-                Customer.CUSTOMER, Event.EVENT, SqliteSequence.SQLITE_SEQUENCE, User.USER);
+                Customer.CUSTOMER,
+                Event.EVENT,
+                Session.SESSION,
+                SqliteSequence.SQLITE_SEQUENCE,
+                User.USER);
     }
 }

@@ -5,8 +5,11 @@ import static io.restassured.RestAssured.given;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -16,16 +19,54 @@ import com.github.vti.amcrm.Config;
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.api.Api;
 import com.github.vti.amcrm.api.DefaultObjectMapper;
+import com.github.vti.amcrm.domain.ActorId;
+import com.github.vti.amcrm.domain.session.Session;
+import com.github.vti.amcrm.domain.session.SessionId;
+import com.github.vti.amcrm.domain.user.UserId;
+import com.github.vti.amcrm.domain.user.command.CreateUserCommand;
+import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.functional.model.CustomerRequestModel;
 import com.github.vti.amcrm.functional.model.UserRequestModel;
+import com.github.vti.amcrm.infra.registry.RegistryFactory;
 
 public class TestFunctional {
+    private static SessionId defaultAdminSessionId;
+    private static SessionId defaultUserSessionId;
+
     public static int findOpenPort() {
         try (ServerSocket serverSocket = new ServerSocket(0)) {
             return serverSocket.getLocalPort();
         } catch (IOException e) {
             throw new RuntimeException("No free port available");
         }
+    }
+
+    public static SessionId createUserSessionId(RegistryFactory registryFactory) {
+        UserId userId = UserId.of(UUID.randomUUID().toString());
+
+        CreateUserCommand command =
+                CreateUserCommand.builder()
+                        .userRepository(registryFactory.getRepositoryRegistry().getUserRepository())
+                        .actorId(ActorId.of(UUID.randomUUID().toString()))
+                        .id(userId)
+                        .name(TestData.getRandomName())
+                        .build();
+
+        try {
+            command.execute();
+        } catch (UserExistsException e) {
+            throw new RuntimeException("Failed to create a user", e);
+        }
+
+        Session session =
+                Session.builder()
+                        .id(SessionId.of(UUID.randomUUID().toString()))
+                        .actorId(ActorId.of(userId.value()))
+                        .expiresAt(Instant.now().plusSeconds(TimeUnit.HOURS.toSeconds(1)))
+                        .build();
+        registryFactory.getRepositoryRegistry().getSessionRepository().store(session);
+
+        return session.getId();
     }
 
     public static Api buildApi(Path tmpDir) {
@@ -35,13 +76,18 @@ public class TestFunctional {
 
         RestAssured.baseURI = baseUrl;
 
-        return new Api(config);
+        Api api = new Api(config);
+
+        defaultAdminSessionId = api.makeSureAtLeastAdminExists().get();
+        defaultUserSessionId = createUserSessionId(api.getRegistryFactory());
+
+        return api;
     }
 
     public static Map<String, String> getAuthenticatedUserHeaders() {
         return new HashMap<String, String>() {
             {
-                put("Authorization", "user");
+                put("Authorization", defaultUserSessionId.value());
             }
         };
     }
@@ -49,7 +95,7 @@ public class TestFunctional {
     public static Map<String, String> getAuthenticatedAdminHeaders() {
         return new HashMap<String, String>() {
             {
-                put("Authorization", "admin");
+                put("Authorization", defaultAdminSessionId.value());
             }
         };
     }

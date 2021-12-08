@@ -142,4 +142,16 @@ public class DatabaseCustomerRepositoryTest {
         assertTrue(loadedCustomer.isDeleted());
         assertEquals(actorId, loadedCustomer.getDeletedBy());
     }
+
+    @Test
+    void returnsEmptyCheck() throws CustomerExistsException {
+        assertTrue(customerRepository.isEmpty());
+
+        ActorId actorId = ActorId.of(TestData.getRandomId());
+        Customer customer = TestFactory.newCustomer();
+
+        customerRepository.store(customer);
+
+        assertFalse(customerRepository.isEmpty());
+    }
 }

@@ -31,6 +31,16 @@ CREATE TABLE user (
     deleted_by TEXT
 );
 
+DROP TABLE IF EXISTS session;
+CREATE TABLE session (
+    id TEXT PRIMARY KEY,
+
+    user_id TEXT NOT NULL,
+
+    created_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NOT NULL
+);
+
 DROP TABLE IF EXISTS event;
 CREATE TABLE event (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -5,6 +5,7 @@ package com.github.vti.amcrm.db;
 
 import com.github.vti.amcrm.db.tables.Customer;
 import com.github.vti.amcrm.db.tables.Event;
+import com.github.vti.amcrm.db.tables.Session;
 import com.github.vti.amcrm.db.tables.SqliteSequence;
 import com.github.vti.amcrm.db.tables.User;
 
@@ -17,6 +18,9 @@ public class Tables {
 
     /** The table <code>event</code>. */
     public static final Event EVENT = Event.EVENT;
+
+    /** The table <code>session</code>. */
+    public static final Session SESSION = Session.SESSION;
 
     /** The table <code>sqlite_sequence</code>. */
     public static final SqliteSequence SQLITE_SEQUENCE = SqliteSequence.SQLITE_SEQUENCE;
