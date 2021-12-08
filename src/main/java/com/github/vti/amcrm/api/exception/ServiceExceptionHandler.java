@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
-import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.common.MediaType;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.server.annotation.ExceptionHandlerFunction;
@@ -19,38 +18,14 @@ public class ServiceExceptionHandler implements ExceptionHandlerFunction {
     @Override
     public HttpResponse handleException(
             ServiceRequestContext ctx, HttpRequest req, Throwable cause) {
-        if (cause instanceof JsonSchemaValidationException) {
-            JsonSchemaValidationException eCause = (JsonSchemaValidationException) cause;
+
+        if (cause instanceof ApiException) {
+            ApiException eCause = (ApiException) cause;
 
             try {
                 String asJson = DefaultObjectMapper.get().writeValueAsString(eCause.toMap());
 
-                return HttpResponse.of(
-                        HttpStatus.UNPROCESSABLE_ENTITY, MediaType.JSON_UTF_8, asJson);
-            } catch (JsonProcessingException e) {
-                log.error("Json serialization failed", e);
-
-                throw new RuntimeException(e);
-            }
-        } else if (cause instanceof NotFoundException) {
-            NotFoundException eCause = (NotFoundException) cause;
-
-            try {
-                String asJson = DefaultObjectMapper.get().writeValueAsString(eCause.toMap());
-
-                return HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, asJson);
-            } catch (JsonProcessingException e) {
-                log.error("Json serialization failed", e);
-
-                throw new RuntimeException(e);
-            }
-        } else if (cause instanceof ConflictException) {
-            ConflictException eCause = (ConflictException) cause;
-
-            try {
-                String asJson = DefaultObjectMapper.get().writeValueAsString(eCause.toMap());
-
-                return HttpResponse.of(HttpStatus.CONFLICT, MediaType.JSON_UTF_8, asJson);
+                return HttpResponse.of(eCause.getStatus(), MediaType.JSON_UTF_8, asJson);
             } catch (JsonProcessingException e) {
                 log.error("Json serialization failed", e);
 

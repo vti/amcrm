@@ -1,22 +1,14 @@
 package com.github.vti.amcrm.api.exception;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.linecorp.armeria.common.HttpStatus;
 
-public class ConflictException extends RuntimeException {
-    private final String message;
-
+public class ConflictException extends ApiException {
     public ConflictException(String message) {
-        super();
-
-        this.message = message;
+        super(message);
     }
 
-    public Map<String, Object> toMap() {
-        return new HashMap<String, Object>() {
-            {
-                put("message", message);
-            }
-        };
+    @Override
+    public HttpStatus getStatus() {
+        return HttpStatus.CONFLICT;
     }
 }

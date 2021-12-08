@@ -23,10 +23,7 @@ import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.logging.AccessLogWriter;
 
 import com.github.vti.amcrm.Config;
-import com.github.vti.amcrm.api.service.AuthenticationService;
-import com.github.vti.amcrm.api.service.CustomerService;
-import com.github.vti.amcrm.api.service.PingService;
-import com.github.vti.amcrm.api.service.UserService;
+import com.github.vti.amcrm.api.service.*;
 import com.github.vti.amcrm.domain.ActorId;
 import com.github.vti.amcrm.domain.RepositoryRegistry;
 import com.github.vti.amcrm.domain.session.Session;
@@ -151,6 +148,9 @@ public final class Api {
                                 new AuthenticationService(delegate, registryFactory)
                                         .serve(ctx, req))
                 .accessLogWriter(AccessLogWriter.custom(ACCESS_LOG_FORMAT), true)
+                .annotatedService(
+                        Resource.OAUTH.value(),
+                        new OauthService(registryFactory, config.getOauth()))
                 .annotatedService(Resource.PING.value(), new PingService())
                 .annotatedService(
                         Resource.CUSTOMERS.value(),
@@ -224,7 +224,8 @@ public final class Api {
     public enum Resource {
         PING("/ping"),
         CUSTOMERS("/customers"),
-        USERS("/users");
+        USERS("/users"),
+        OAUTH("/oauth");
 
         private final String value;
 

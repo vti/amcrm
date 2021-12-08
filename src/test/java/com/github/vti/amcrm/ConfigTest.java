@@ -1,6 +1,7 @@
 package com.github.vti.amcrm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import java.io.FileNotFoundException;
@@ -31,12 +32,16 @@ public class ConfigTest {
 
     @Test
     void fromEnv() {
-        Config.EnvReader envReader = mock(Config.EnvReader.class);
+        Config.EnvReader envReader = spy(new Config.EnvReader());
         when(envReader.getenv(Config.Env.AMCRM_BASE_URL.toString())).thenReturn("http://other.url");
         when(envReader.getenv(Config.Env.AMCRM_PORT.toString())).thenReturn("1234");
         when(envReader.getenv(Config.Env.AMCRM_STORAGE_PROVIDER.toString())).thenReturn("database");
         when(envReader.getenv(Config.Env.AMCRM_STORAGE_OPTIONS.toString()))
                 .thenReturn("database=db.db");
+        when(envReader.getenv(Config.Env.AMCRM_OAUTH_CLIENT_ID.toString()))
+                .thenReturn("1234567890");
+        when(envReader.getenv(Config.Env.AMCRM_OAUTH_CLIENT_SECRET.toString()))
+                .thenReturn("12039d6dd9a7e27622301e935b6eefc78846802e");
 
         Config config = Config.builder().loadFromEnv(envReader).build();
 
@@ -46,6 +51,12 @@ public class ConfigTest {
 
         Map<String, String> options = config.getStorage().getOptions();
         assertEquals("db.db", options.get("database"));
+
+        assertTrue(config.getOauth().isPresent());
+        assertEquals("1234567890", config.getOauth().get().getClientId());
+        assertEquals(
+                "12039d6dd9a7e27622301e935b6eefc78846802e",
+                config.getOauth().get().getClientSecret());
     }
 
     @Test
@@ -58,6 +69,12 @@ public class ConfigTest {
 
         Map<String, String> options = config.getStorage().getOptions();
         assertEquals("db.db", options.get("database"));
+
+        assertTrue(config.getOauth().isPresent());
+        assertEquals("1234567890", config.getOauth().get().getClientId());
+        assertEquals(
+                "12039d6dd9a7e27622301e935b6eefc78846802e",
+                config.getOauth().get().getClientSecret());
     }
 
     @Test

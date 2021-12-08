@@ -136,6 +136,16 @@ public class CustomerResourceTest {
     }
 
     @Test
+    void returnsBadRequestErrorOnNotJson() throws JsonProcessingException {
+        given().headers(TestFunctional.getAuthenticatedUserHeaders())
+                .body("garbage")
+                .when()
+                .post(Api.Resource.CUSTOMERS.toString())
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
     void returnsValidationError() throws JsonProcessingException {
         CustomerRequestModel customer = new CustomerRequestModel();
         customer.name = TestData.getRandomName();

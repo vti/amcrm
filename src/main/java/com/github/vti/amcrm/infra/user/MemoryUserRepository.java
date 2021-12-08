@@ -21,6 +21,14 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> loadByName(String name) {
+        return storage.entrySet().stream()
+                .filter(e -> e.getValue().getName().equals(name))
+                .findFirst()
+                .map(e -> e.getValue());
+    }
+
+    @Override
     public void store(User user) throws UserExistsException {
         if (storage.containsKey(user.getId())) {
             User existingUser = storage.get(user.getId());

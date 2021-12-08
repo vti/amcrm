@@ -48,6 +48,51 @@ Content-Type: application/json
 
 ### Authentication
 
+Authentication is session-based, once you have a session id you can perform requests to the restricted endpoints. Since
+Users resource is reserved only for admin, every user has a role: anonymous, user or admin. Based on the role the access
+is restricted.
+
+Session expires in 1h but is automatically prolonged when used.
+
+Session is sent in the `Authorization` header:
+
+```http
+GET /customers
+Authorization: e059e8e2-585e-11ec-85f1-7f102f05f20c
+...
+```
+
+#### OAuth
+
+To get a session id one can use a GitHub public oauth. An application needs to be created and client_id and
+client_secret configured.
+
+1. Get the login url
+
+```http
+POST /oauth/github
+```
+
+```http
+HTTP/1.1 200 OK
+{
+  "location": "https://github.com/login/oauth/authorize?client_id=1234567890"
+}
+```
+
+2. After the user comes back, the authentication in successful and their name is recognized a new session id is created
+   and returned.
+
+```http
+
+{
+  "sessionId":"cc0b9dea-585e-11ec-a20f-bf59e60f2403"
+}
+```
+
+Initially the users can be created by the default admin that is created automatically during the start of application if
+there are no users.
+
 ### Pagination
 
 It is possible to pass a limit and an offset for paginating the list results, which is not the best choice of course,
@@ -140,7 +185,7 @@ There is a default local filesystem photo storage included, but it can be easily
 storage like AWS S3 or similar. In case of a local storage the path is saved in the domain storage and the base url is
 automatically prepended during the runtime.
 
-By default photos are saved into the `public/` directory.
+By default, photos are saved into the `public/` directory.
 
 ### Local environment
 
@@ -167,6 +212,9 @@ be present or to have a specific version. Instead of running `mvn` run `./mvnw`.
         provider: database
         options:
           database: db.db
+      oauth:
+        client_id: "1234567890"
+        client_secret: 12039d6dd9a7e27622301e935b6eefc78846802e
       ```
    3. Environment variables
    
@@ -174,6 +222,8 @@ be present or to have a specific version. Instead of running `mvn` run `./mvnw`.
       AMCRM_PORT=1234
       AMCRM_STORAGE_PROVIDER=database
       AMCRM_STORAGE_DATABASE_OPTIONS=database=db.db
+      AMCRM_OAUTH_CLIENT_ID=1234567890
+      AMCRM_OAUTH_CLIENT_SECRET=12039d6dd9a7e27622301e935b6eefc78846802e
       ```
 
 4. OPTIONAL. Setup database (when using database storage)
@@ -273,7 +323,8 @@ following parts:
 
 ### Domain
 
-Domain holds the domain logic of the application without relying on a specific storage or a framework. Domain enforces its own interfaces for different purposes that are implemented based on the need.
+Domain holds the domain logic of the application without relying on a specific storage or a framework. Domain enforces
+its own interfaces for different purposes that are implemented based on the need.
 
 Domain contains of Entities, Events, Values Objects, Repositories & Commands.
 

@@ -23,6 +23,7 @@ import com.linecorp.armeria.server.annotation.RequestConverterFunction;
 import com.linecorp.armeria.server.annotation.ResponseConverterFunction;
 import com.networknt.schema.*;
 
+import com.github.vti.amcrm.api.exception.BadRequestException;
 import com.github.vti.amcrm.api.exception.JsonSchemaValidationException;
 import com.github.vti.amcrm.util.CamelCase;
 
@@ -57,9 +58,7 @@ public class JsonConverter implements RequestConverterFunction, ResponseConverte
 
             throw new JsonSchemaValidationException(validationResult);
         } catch (IOException e) {
-            log.error("Schema validation failed", e);
-
-            throw new RuntimeException("Schema validation failed", e);
+            throw new BadRequestException();
         }
     }
 

@@ -97,6 +97,61 @@ public class DatabaseUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> loadByName(String name) {
+        Objects.requireNonNull(name, "name");
+
+        try (Connection connection = this.dataSource.getConnection()) {
+            DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
+
+            Record10<
+                            String,
+                            Long,
+                            Boolean,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String>
+                    record =
+                            create.select(
+                                            USER.ID,
+                                            USER.VERSION,
+                                            USER.IS_ADMIN,
+                                            USER.NAME,
+                                            USER.CREATED_AT,
+                                            USER.CREATED_BY,
+                                            USER.UPDATED_AT,
+                                            USER.UPDATED_BY,
+                                            USER.DELETED_AT,
+                                            USER.DELETED_BY)
+                                    .from(USER)
+                                    .where(USER.NAME.eq(name))
+                                    .fetchOne();
+
+            if (record == null) {
+                return Optional.empty();
+            } else {
+                User user =
+                        User.builder()
+                                .id(UserId.of(record.getValue(USER.ID)))
+                                .version(record.getValue(USER.VERSION))
+                                .admin(record.getValue(USER.IS_ADMIN))
+                                .name(record.getValue(USER.NAME))
+                                .createdBy(toActorId(record.getValue(USER.CREATED_BY)))
+                                .updatedBy(toActorId(record.getValue(USER.UPDATED_BY)))
+                                .deletedBy(toActorId(record.getValue(USER.DELETED_BY)))
+                                .build();
+
+                return Optional.of(user);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching", e);
+        }
+    }
+
+    @Override
     public void store(User user) throws UserExistsException {
         try (Connection connection = this.dataSource.getConnection()) {
             connection.setAutoCommit(false);

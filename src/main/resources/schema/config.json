@@ -2,8 +2,7 @@
   "type": "object",
   "properties": {
     "baseUrl": {
-      "type": "string",
-      "format": "url"
+      "type": "string"
     },
     "port": {
       "type": "integer"
@@ -49,6 +48,18 @@
           ]
         }
       ]
+    },
+    "oauth": {
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "type": "string"
+        },
+        "clientSecret": {
+          "type": "string"
+        }
+      },
+      "required": ["clientId", "clientSecret"]
     }
   }
 }

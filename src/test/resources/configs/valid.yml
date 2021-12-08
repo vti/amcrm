@@ -4,3 +4,6 @@ storage:
   provider: database
   options:
     database: db.db
+oauth:
+  clientId: "1234567890"
+  clientSecret: "12039d6dd9a7e27622301e935b6eefc78846802e"

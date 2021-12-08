@@ -1,17 +1,19 @@
 package com.github.vti.amcrm.api.exception;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.linecorp.armeria.common.HttpStatus;
 
-public class NotFoundException extends RuntimeException {
+public class NotFoundException extends ApiException {
+
     public NotFoundException() {
-        super();
+        super("Not found");
     }
 
-    public Map<String, Object> toMap() {
-        Map<String, Object> response = new HashMap<>();
+    public NotFoundException(String message) {
+        super(message);
+    }
 
-        response.put("message", "Not found");
-        return response;
+    @Override
+    public HttpStatus getStatus() {
+        return HttpStatus.NOT_FOUND;
     }
 }

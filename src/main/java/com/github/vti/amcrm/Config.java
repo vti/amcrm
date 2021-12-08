@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,6 +27,7 @@ public class Config {
     private URL baseUrl;
     private int port;
     private StorageConfig storage;
+    private OauthConfig oauth;
 
     private Config() {}
 
@@ -53,6 +55,8 @@ public class Config {
         } catch (MalformedURLException e) {
             throw new RuntimeException("Invalid base url");
         }
+
+        this.oauth = builder.oauth;
     }
 
     public URL getBaseUrl() {
@@ -67,9 +71,22 @@ public class Config {
         return storage;
     }
 
+    public Optional<OauthConfig> getOauth() {
+        return Optional.ofNullable(oauth);
+    }
+
     @Override
     public String toString() {
-        return "Config{" + "baseUrl=" + baseUrl + ", port=" + port + ", storage=" + storage + '}';
+        return "Config{"
+                + "baseUrl="
+                + baseUrl
+                + ", port="
+                + port
+                + ", storage="
+                + storage
+                + ", oauth="
+                + oauth
+                + '}';
     }
 
     public static Builder builder() {
@@ -80,6 +97,7 @@ public class Config {
         private URL baseUrl;
         private Integer port;
         private StorageConfig storage;
+        private OauthConfig oauth;
 
         public Builder baseUrl(URL baseUrl) {
             this.baseUrl = baseUrl;
@@ -93,6 +111,11 @@ public class Config {
 
         public Builder storage(StorageConfig storage) {
             this.storage = Objects.requireNonNull(storage);
+            return this;
+        }
+
+        public Builder oauth(OauthConfig oauth) {
+            this.oauth = oauth;
             return this;
         }
 
@@ -120,8 +143,9 @@ public class Config {
                 Config config = objectMapper.treeToValue(jsonNode, Config.class);
 
                 this.baseUrl = config.getBaseUrl();
-                this.port = config.getPort();
+                this.port = config.getPort() == 0 ? DEFAULT_PORT : config.getPort();
                 this.storage = config.getStorage();
+                this.oauth = config.getOauth().orElse(null);
 
                 return this;
             } catch (IOException | ProcessingException e) {
@@ -134,25 +158,26 @@ public class Config {
         }
 
         public Builder loadFromEnv(EnvReader envReader) {
-            String baseUrl = envReader.getenv(Env.AMCRM_BASE_URL.toString());
-            if (baseUrl != null && !baseUrl.trim().isEmpty()) {
+            Optional<String> baseUrl = envReader.getenvNotEmpty(Env.AMCRM_BASE_URL.toString());
+            if (baseUrl.isPresent()) {
                 try {
-                    this.baseUrl(new URL(baseUrl));
+                    this.baseUrl(new URL(baseUrl.get()));
                 } catch (MalformedURLException e) {
                     throw new RuntimeException("Invalid base url");
                 }
             }
 
-            String port = envReader.getenv(Env.AMCRM_PORT.toString());
-            if (port != null && !port.trim().isEmpty()) {
-                this.port(Integer.parseInt(port));
+            Optional<String> port = envReader.getenvNotEmpty(Env.AMCRM_PORT.toString());
+            if (port.isPresent()) {
+                this.port(Integer.parseInt(port.get()));
             }
 
-            String storageProvider = envReader.getenv(Env.AMCRM_STORAGE_PROVIDER.toString());
-            if (storageProvider != null) {
-                if (storageProvider.equals("memory")) {
+            Optional<String> storageProvider =
+                    envReader.getenvNotEmpty(Env.AMCRM_STORAGE_PROVIDER.toString());
+            if (storageProvider.isPresent()) {
+                if (storageProvider.get().equals("memory")) {
                     this.storage(new StorageConfig(StorageProvider.MEMORY, null));
-                } else if (storageProvider.equals("database")) {
+                } else if (storageProvider.get().equals("database")) {
                     String options = envReader.getenv(Env.AMCRM_STORAGE_OPTIONS.toString());
 
                     if (options != null) {
@@ -172,6 +197,15 @@ public class Config {
                 } else {
                     throw new RuntimeException("Unknown storage provider");
                 }
+            }
+
+            Optional<String> oauthClientId =
+                    envReader.getenvNotEmpty(Env.AMCRM_OAUTH_CLIENT_ID.toString());
+            Optional<String> oauthClientSecret =
+                    envReader.getenvNotEmpty(Env.AMCRM_OAUTH_CLIENT_SECRET.toString());
+
+            if (oauthClientId.isPresent() && oauthClientSecret.isPresent()) {
+                this.oauth = new OauthConfig(oauthClientId.get(), oauthClientSecret.get());
             }
 
             return this;
@@ -215,14 +249,63 @@ public class Config {
         DATABASE()
     }
 
+    public static class OauthConfig {
+        private OauthProvider provider;
+        private String clientId;
+        private String clientSecret;
+
+        private OauthConfig() {}
+
+        public OauthConfig(String clientId, String clientSecret) {
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
+        }
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        @Override
+        public String toString() {
+            return "OauthConfig{"
+                    + "clientId='"
+                    + clientId
+                    + '\''
+                    + ", clientSecret='"
+                    + clientSecret
+                    + '\''
+                    + '}';
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+    }
+
+    public enum OauthProvider {
+        GITHUB()
+    }
+
     public enum Env {
         AMCRM_BASE_URL,
         AMCRM_PORT,
         AMCRM_STORAGE_PROVIDER,
-        AMCRM_STORAGE_OPTIONS
+        AMCRM_STORAGE_OPTIONS,
+        AMCRM_OAUTH_CLIENT_ID,
+        AMCRM_OAUTH_CLIENT_SECRET
     }
 
     public static class EnvReader {
+        public Optional<String> getenvNotEmpty(String key) {
+            String value = getenv(key);
+
+            if (value != null && !value.trim().isEmpty()) {
+                return Optional.of(value.trim());
+            }
+
+            return Optional.empty();
+        }
+
         public String getenv(String key) {
             return System.getenv(key);
         }
