@@ -11,9 +11,10 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jooq.*;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.Record11;
+import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
@@ -26,8 +27,6 @@ import com.github.vti.amcrm.infra.DatabaseUtils;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 
 public class DatabaseCustomerRepository implements CustomerRepository {
-    private static final Logger log = LogManager.getLogger(DatabaseCustomerRepository.class);
-
     private final DataSource dataSource;
 
     public DatabaseCustomerRepository(DataSource dataSource) {
@@ -194,11 +193,7 @@ public class DatabaseCustomerRepository implements CustomerRepository {
 
             Record1<String> record = create.select(CUSTOMER.ID).from(CUSTOMER).fetchOne();
 
-            if (record == null) {
-                return true;
-            }
-
-            return false;
+            return record == null;
         } catch (SQLException e) {
             throw new RuntimeException("Empty check failed", e);
         }

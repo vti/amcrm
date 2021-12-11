@@ -27,6 +27,36 @@ import com.github.vti.amcrm.domain.user.exception.UserExistsException;
 import com.github.vti.amcrm.infra.DatabaseUtils;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 
+class ViewRecordMapper {
+    static Optional<User> fromRecord(
+            Record10<
+                            String,
+                            Long,
+                            Boolean,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String,
+                            LocalDateTime,
+                            String>
+                    record) {
+
+        if (record == null) return Optional.empty();
+
+        return Optional.of(
+                User.builder()
+                        .id(UserId.of(record.getValue(USER.ID)))
+                        .version(record.getValue(USER.VERSION))
+                        .admin(record.getValue(USER.IS_ADMIN))
+                        .name(record.getValue(USER.NAME))
+                        .createdBy(toActorId(record.getValue(USER.CREATED_BY)))
+                        .updatedBy(toActorId(record.getValue(USER.UPDATED_BY)))
+                        .deletedBy(toActorId(record.getValue(USER.DELETED_BY)))
+                        .build());
+    }
+}
+
 public class DatabaseUserRepository implements UserRepository {
     private final DataSource dataSource;
 
@@ -70,22 +100,7 @@ public class DatabaseUserRepository implements UserRepository {
                                     .where(USER.ID.eq(id.value()))
                                     .fetchOne();
 
-            if (record == null) {
-                return Optional.empty();
-            } else {
-                User user =
-                        User.builder()
-                                .id(UserId.of(record.getValue(USER.ID)))
-                                .version(record.getValue(USER.VERSION))
-                                .admin(record.getValue(USER.IS_ADMIN))
-                                .name(record.getValue(USER.NAME))
-                                .createdBy(toActorId(record.getValue(USER.CREATED_BY)))
-                                .updatedBy(toActorId(record.getValue(USER.UPDATED_BY)))
-                                .deletedBy(toActorId(record.getValue(USER.DELETED_BY)))
-                                .build();
-
-                return Optional.of(user);
-            }
+            return ViewRecordMapper.fromRecord(record);
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching", e);
         }
@@ -125,22 +140,7 @@ public class DatabaseUserRepository implements UserRepository {
                                     .where(USER.NAME.eq(name))
                                     .fetchOne();
 
-            if (record == null) {
-                return Optional.empty();
-            } else {
-                User user =
-                        User.builder()
-                                .id(UserId.of(record.getValue(USER.ID)))
-                                .version(record.getValue(USER.VERSION))
-                                .admin(record.getValue(USER.IS_ADMIN))
-                                .name(record.getValue(USER.NAME))
-                                .createdBy(toActorId(record.getValue(USER.CREATED_BY)))
-                                .updatedBy(toActorId(record.getValue(USER.UPDATED_BY)))
-                                .deletedBy(toActorId(record.getValue(USER.DELETED_BY)))
-                                .build();
-
-                return Optional.of(user);
-            }
+            return ViewRecordMapper.fromRecord(record);
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching", e);
         }
@@ -238,11 +238,7 @@ public class DatabaseUserRepository implements UserRepository {
 
             Record1<String> record = create.select(USER.ID).from(USER).fetchOne();
 
-            if (record == null) {
-                return true;
-            }
-
-            return false;
+            return record == null;
         } catch (SQLException e) {
             throw new RuntimeException("Empty check failed", e);
         }
