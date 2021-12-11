@@ -38,6 +38,12 @@ public class MemoryUserRepository implements UserRepository {
             }
         }
 
+        Optional<User> userOptional = loadByName(user.getName());
+
+        if (userOptional.isPresent() && !userOptional.get().getId().equals(user.getId())) {
+            throw new UserExistsException();
+        }
+
         storage.put(user.getId(), user);
 
         user.incrementVersion();

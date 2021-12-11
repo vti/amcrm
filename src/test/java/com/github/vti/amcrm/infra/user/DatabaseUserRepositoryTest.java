@@ -93,9 +93,19 @@ public class DatabaseUserRepositoryTest {
     }
 
     @Test
-    void throwsWhenUserAlreadyExists() throws Exception {
+    void throwsWhenUserAlreadyExistsOnId() throws Exception {
         User user1 = TestFactory.newUserBuilder().id(UserId.of("1")).build();
         User user2 = TestFactory.newUserBuilder().id(UserId.of("1")).build();
+
+        userRepository.store(user1);
+
+        assertThrows(UserExistsException.class, () -> userRepository.store(user2));
+    }
+
+    @Test
+    void throwsWhenUserAlreadyExistsOnName() throws Exception {
+        User user1 = TestFactory.newUserBuilder().name("John").build();
+        User user2 = TestFactory.newUserBuilder().name("John").build();
 
         userRepository.store(user1);
 

@@ -120,7 +120,7 @@ public class User extends TableImpl<UserRecord> {
 
     @Override
     public List<UniqueKey<UserRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserRecord>>asList(Keys.PK_USER);
+        return Arrays.<UniqueKey<UserRecord>>asList(Keys.PK_USER, Keys.SQLITE_AUTOINDEX_USER_2);
     }
 
     @Override

@@ -20,7 +20,7 @@ CREATE TABLE user (
     id TEXT PRIMARY KEY,
     version BIGINT NOT NULL,
 
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     is_admin BOOLEAN NOT NULL,
 
     created_at TIMESTAMP NOT NULL,

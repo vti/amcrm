@@ -43,4 +43,10 @@ public class Keys {
     public static final UniqueKey<UserRecord> PK_USER =
             Internal.createUniqueKey(
                     User.USER, DSL.name("pk_user"), new TableField[] {User.USER.ID}, true);
+    public static final UniqueKey<UserRecord> SQLITE_AUTOINDEX_USER_2 =
+            Internal.createUniqueKey(
+                    User.USER,
+                    DSL.name("sqlite_autoindex_user_2"),
+                    new TableField[] {User.USER.NAME},
+                    true);
 }

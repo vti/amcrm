@@ -12,7 +12,7 @@ public class TestData {
     }
 
     public static String getRandomName() {
-        return getRandomFromList(Arrays.asList("John", "Bill", "Mary"));
+        return getRandomFromList(Arrays.asList("John", "Bill", "Mary")) + getRandomId();
     }
 
     public static String getRandomSurname() {
