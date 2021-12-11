@@ -5,14 +5,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
 import com.linecorp.armeria.client.WebClient;
-import com.linecorp.armeria.common.*;
-import com.linecorp.armeria.server.annotation.*;
+import com.linecorp.armeria.common.AggregatedHttpResponse;
+import com.linecorp.armeria.common.HttpHeaderNames;
+import com.linecorp.armeria.common.HttpMethod;
+import com.linecorp.armeria.common.RequestHeaders;
+import com.linecorp.armeria.server.annotation.ExceptionHandler;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Param;
+import com.linecorp.armeria.server.annotation.Post;
+import com.linecorp.armeria.server.annotation.RequestConverter;
+import com.linecorp.armeria.server.annotation.ResponseConverter;
 
 import com.github.vti.amcrm.Config;
 import com.github.vti.amcrm.api.JsonConverter;
@@ -20,10 +31,10 @@ import com.github.vti.amcrm.api.exception.BadRequestException;
 import com.github.vti.amcrm.api.exception.ConflictException;
 import com.github.vti.amcrm.api.exception.ServiceExceptionHandler;
 import com.github.vti.amcrm.domain.ActorId;
+import com.github.vti.amcrm.domain.RepositoryRegistry;
 import com.github.vti.amcrm.domain.session.Session;
 import com.github.vti.amcrm.domain.session.SessionId;
 import com.github.vti.amcrm.domain.user.User;
-import com.github.vti.amcrm.infra.registry.RegistryFactory;
 
 @ExceptionHandler(ServiceExceptionHandler.class)
 @RequestConverter(JsonConverter.class)
@@ -34,15 +45,15 @@ public class OauthService {
             "https://github.com/login/oauth/access_token";
     private static final String GITHUB_USER_URL = "https://api.github.com/user";
     private final Optional<Config.OauthConfig> oauth;
-    private final RegistryFactory registryFactory;
+    private final RepositoryRegistry repositoryRegistry;
 
-    public OauthService(RegistryFactory registryFactory, Optional<Config.OauthConfig> oauth) {
-        this.registryFactory = registryFactory;
+    public OauthService(Optional<Config.OauthConfig> oauth, RepositoryRegistry repositoryRegistry) {
+        this.repositoryRegistry = repositoryRegistry;
         this.oauth = oauth;
     }
 
     @Post("/github")
-    public Object github() {
+    public Map<String, String> github() {
         Config.OauthConfig oauth =
                 this.oauth.orElseThrow(
                         () -> new BadRequestException("No oauth enabled & configured"));
@@ -64,7 +75,7 @@ public class OauthService {
     }
 
     @Get("/github/callback")
-    public Object callback(@Param("code") String code) {
+    public Map<String, String> githubCallback(@Param("code") String code) {
         Config.OauthConfig oauth =
                 this.oauth.orElseThrow(
                         () -> new BadRequestException("No oauth enabled & configured"));
@@ -76,8 +87,7 @@ public class OauthService {
 
         String name = getUserName(accessToken);
 
-        Optional<User> userOptional =
-                registryFactory.getRepositoryRegistry().getUserRepository().loadByName(name);
+        Optional<User> userOptional = repositoryRegistry.getUserRepository().loadByName(name);
 
         if (userOptional.isPresent()) {
             Session session =
@@ -86,7 +96,7 @@ public class OauthService {
                             .actorId(ActorId.of(userOptional.get().getId().value()))
                             .expiresAt(Instant.now().plusSeconds(TimeUnit.HOURS.toSeconds(1)))
                             .build();
-            registryFactory.getRepositoryRegistry().getSessionRepository().store(session);
+            repositoryRegistry.getSessionRepository().store(session);
 
             Map<String, String> sessionInfo = new HashMap<>();
             sessionInfo.put("sessionId", session.getId().value());

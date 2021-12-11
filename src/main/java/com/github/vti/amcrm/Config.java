@@ -265,6 +265,10 @@ public class Config {
             return clientId;
         }
 
+        public String getClientSecret() {
+            return clientSecret;
+        }
+
         @Override
         public String toString() {
             return "OauthConfig{"
@@ -275,10 +279,6 @@ public class Config {
                     + clientSecret
                     + '\''
                     + '}';
-        }
-
-        public String getClientSecret() {
-            return clientSecret;
         }
     }
 

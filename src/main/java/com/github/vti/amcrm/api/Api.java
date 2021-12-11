@@ -150,7 +150,7 @@ public final class Api {
                 .accessLogWriter(AccessLogWriter.custom(ACCESS_LOG_FORMAT), true)
                 .annotatedService(
                         Resource.OAUTH.value(),
-                        new OauthService(registryFactory, config.getOauth()))
+                        new OauthService(config.getOauth(), repositoryRegistry))
                 .annotatedService(Resource.PING.value(), new PingService())
                 .annotatedService(
                         Resource.CUSTOMERS.value(),
