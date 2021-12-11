@@ -154,9 +154,10 @@ public final class Api {
                 .annotatedService(Resource.PING.value(), new PingService())
                 .annotatedService(
                         Resource.CUSTOMERS.value(),
-                        new CustomerService(repositoryRegistry, viewRegistry, photoStorage))
+                        new CustomerService(config, repositoryRegistry, viewRegistry, photoStorage))
                 .annotatedService(
-                        Resource.USERS.value(), new UserService(repositoryRegistry, viewRegistry))
+                        Resource.USERS.value(),
+                        new UserService(config, repositoryRegistry, viewRegistry))
                 .serviceUnder("/docs", DocService.builder().build())
                 .serviceUnder("/", FileService.of(publicDir))
                 .build();

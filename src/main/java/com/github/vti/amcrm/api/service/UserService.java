@@ -1,16 +1,18 @@
 package com.github.vti.amcrm.api.service;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.ResponseHeaders;
 import com.linecorp.armeria.server.annotation.*;
 
+import com.github.vti.amcrm.Config;
 import com.github.vti.amcrm.api.AccessDecorator;
 import com.github.vti.amcrm.api.Client;
 import com.github.vti.amcrm.api.JsonConverter;
+import com.github.vti.amcrm.api.LinkHeader;
 import com.github.vti.amcrm.api.exception.ConflictException;
 import com.github.vti.amcrm.api.exception.NotFoundException;
 import com.github.vti.amcrm.api.exception.ServiceExceptionHandler;
@@ -33,22 +35,28 @@ import com.github.vti.amcrm.infra.user.dto.UserSummary;
 @ResponseConverter(JsonConverter.class)
 @AccessDecorator(role = Client.Role.ADMIN)
 public class UserService extends BaseService {
+    private final Config config;
     private final RepositoryRegistry repositoryRegistry;
     private final ViewRegistry viewRegistry;
 
-    public UserService(RepositoryRegistry repositoryRegistry, ViewRegistry viewRegistry) {
+    public UserService(
+            Config config, RepositoryRegistry repositoryRegistry, ViewRegistry viewRegistry) {
+        this.config = config;
         this.repositoryRegistry = Objects.requireNonNull(repositoryRegistry);
         this.viewRegistry = Objects.requireNonNull(viewRegistry);
     }
 
     @Get("")
-    public List<UserSummary> getUserList(
-            @Param("limit") Optional<Integer> limit, @Param("offset") Optional<Integer> offset) {
-        Pager pager = new Pager(limit, offset);
+    public HttpResponse getUserList(
+            @Param("limit") Optional<Integer> limit, @Param("page") Optional<Integer> pageNum) {
+        Pager pager = new Pager(limit, pageNum);
 
-        Page<UserSummary> page = this.viewRegistry.getUserView().find(pager);
+        Page<UserSummary> page = viewRegistry.getUserView().find(pager);
 
-        return page.getItems();
+        String linkHeader = new LinkHeader(config.getBaseUrl().toString(), pager).toString();
+
+        return HttpResponse.ofJson(
+                ResponseHeaders.of(HttpStatus.OK, "Link", linkHeader), page.getItems());
     }
 
     @Get("/{id}")

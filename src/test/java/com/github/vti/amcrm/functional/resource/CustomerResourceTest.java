@@ -2,6 +2,7 @@ package com.github.vti.amcrm.functional.resource;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.Path;
@@ -113,12 +114,12 @@ public class CustomerResourceTest {
     }
 
     @Test
-    void listsCustomersLimited() throws JsonProcessingException {
+    void listsCustomersPaginated() throws JsonProcessingException {
         TestFunctional.createCustomer();
         TestFunctional.createCustomer();
         TestFunctional.createCustomer();
 
-        Response response =
+        Response response1 =
                 given().headers(TestFunctional.getAuthenticatedUserHeaders())
                         .when()
                         .queryParam("limit", "2")
@@ -126,13 +127,32 @@ public class CustomerResourceTest {
                         .then()
                         .statusCode(200)
                         .assertThat()
+                        .header("Link", containsString("page=2"))
                         .body(
                                 matchesJsonSchemaInClasspath(
                                         TestFunctional.Model.CUSTOMER_LIST.toString()))
                         .extract()
                         .response();
 
-        assertEquals(2, response.jsonPath().getList("$").size());
+        assertEquals(2, response1.jsonPath().getList("$").size());
+
+        Response response2 =
+                given().headers(TestFunctional.getAuthenticatedUserHeaders())
+                        .when()
+                        .queryParam("limit", "2")
+                        .queryParam("page", "2")
+                        .get(Api.Resource.CUSTOMERS.toString())
+                        .then()
+                        .statusCode(200)
+                        .assertThat()
+                        .header("Link", containsString("page=3"))
+                        .body(
+                                matchesJsonSchemaInClasspath(
+                                        TestFunctional.Model.CUSTOMER_LIST.toString()))
+                        .extract()
+                        .response();
+
+        assertEquals(1, response2.jsonPath().getList("$").size());
     }
 
     @Test

@@ -98,6 +98,16 @@ there are no users.
 It is possible to pass a limit and an offset for paginating the list results, which is not the best choice of course,
 something like a proper key set would be much more efficient, but it can be easily change when the need arises.
 
+```http
+GET /customers?limit=100&page=2
+```
+
+```http
+HTTP/1.1 200 OK
+Link: <http://localhost:4567?limit=100&page=1>; rel="prev", <http://localhost:4567?limit=100&page=3>; rel="next"
+
+```
+
 ### Resources
 
 #### Customers

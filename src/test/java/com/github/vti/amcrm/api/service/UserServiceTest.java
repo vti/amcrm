@@ -14,12 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
 
+import com.github.vti.amcrm.Config;
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
 import com.github.vti.amcrm.api.Client;
+import com.github.vti.amcrm.api.DefaultObjectMapper;
 import com.github.vti.amcrm.api.exception.ConflictException;
 import com.github.vti.amcrm.api.exception.NotFoundException;
 import com.github.vti.amcrm.api.service.request.CreateUserRequest;
@@ -45,7 +49,10 @@ public class UserServiceTest {
         RepositoryRegistry repositoryRegistry = new DatabaseRepositoryRegistry(dataSource);
         ViewRegistry viewRegistry = new DatabaseViewRegistry(dataSource, baseUrl);
 
-        service = Mockito.spy(new UserService(repositoryRegistry, viewRegistry));
+        service =
+                Mockito.spy(
+                        new UserService(
+                                Config.builder().build(), repositoryRegistry, viewRegistry));
 
         client = Client.user(TestData.getRandomId());
         Mockito.doReturn(client).when(service).getClient();
@@ -70,14 +77,18 @@ public class UserServiceTest {
     }
 
     @Test
-    void returnsEmptyList() {
-        List<UserSummary> users = service.getUserList(Optional.empty(), Optional.empty());
+    void returnsEmptyList() throws JsonProcessingException {
+        HttpResponse response = service.getUserList(Optional.empty(), Optional.empty());
+
+        String content = response.aggregate().join().contentUtf8();
+
+        List<UserSummary> users = DefaultObjectMapper.get().readValue(content, List.class);
 
         assertEquals(0, users.size());
     }
 
     @Test
-    void returnsList() {
+    void returnsList() throws JsonProcessingException {
         CreateUserRequest request1 = TestFactory.newCreateUserRequest();
         service.createUser(request1);
 
@@ -87,13 +98,17 @@ public class UserServiceTest {
         CreateUserRequest request3 = TestFactory.newCreateUserRequest();
         service.createUser(request3);
 
-        List<UserSummary> users = service.getUserList(Optional.empty(), Optional.empty());
+        HttpResponse response = service.getUserList(Optional.empty(), Optional.empty());
+
+        String content = response.aggregate().join().contentUtf8();
+
+        List<UserSummary> users = DefaultObjectMapper.get().readValue(content, List.class);
 
         assertEquals(3, users.size());
     }
 
     @Test
-    void returnsListLimited() {
+    void returnsListLimited() throws JsonProcessingException {
         CreateUserRequest request1 = TestFactory.newCreateUserRequest();
         service.createUser(request1);
 
@@ -103,9 +118,41 @@ public class UserServiceTest {
         CreateUserRequest request3 = TestFactory.newCreateUserRequest();
         service.createUser(request3);
 
-        List<UserSummary> users = service.getUserList(Optional.of(2), Optional.empty());
+        HttpResponse response = service.getUserList(Optional.of(2), Optional.empty());
+
+        String content = response.aggregate().join().contentUtf8();
+
+        List<UserSummary> users = DefaultObjectMapper.get().readValue(content, List.class);
 
         assertEquals(2, users.size());
+    }
+
+    @Test
+    void returnsListPaginated() throws JsonProcessingException {
+        CreateUserRequest request1 = TestFactory.newCreateUserRequest();
+        service.createUser(request1);
+
+        CreateUserRequest request2 = TestFactory.newCreateUserRequest();
+        service.createUser(request2);
+
+        CreateUserRequest request3 = TestFactory.newCreateUserRequest();
+        service.createUser(request3);
+
+        HttpResponse response1 = service.getUserList(Optional.of(2), Optional.empty());
+
+        String content1 = response1.aggregate().join().contentUtf8();
+
+        List<UserSummary> page1 = DefaultObjectMapper.get().readValue(content1, List.class);
+
+        assertEquals(2, page1.size());
+
+        HttpResponse response2 = service.getUserList(Optional.of(2), Optional.of(2));
+
+        String content2 = response2.aggregate().join().contentUtf8();
+
+        List<UserSummary> page2 = DefaultObjectMapper.get().readValue(content2, List.class);
+
+        assertEquals(1, page2.size());
     }
 
     @Test

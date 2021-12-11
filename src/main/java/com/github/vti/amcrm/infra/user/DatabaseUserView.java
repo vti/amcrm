@@ -79,9 +79,7 @@ public class DatabaseUserView implements UserView {
                 users.add(user);
             }
 
-            Pager newPager = new Pager(pager.getLimit(), pager.getOffset() + pager.getLimit());
-
-            return new Page(users, newPager);
+            return new Page(users, Pager.nextOf(pager));
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching", e);
         }

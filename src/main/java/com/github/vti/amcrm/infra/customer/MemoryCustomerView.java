@@ -53,9 +53,12 @@ public class MemoryCustomerView implements CustomerView {
                         .collect(Collectors.toList());
 
         if (customers.size() > 0) {
-            customers = customers.subList(0, Math.min(customers.size(), pager.getLimit()));
+            customers =
+                    customers.subList(
+                            pager.getOffset(),
+                            Math.min(customers.size(), pager.getOffset() + pager.getLimit()));
         }
 
-        return new Page(customers, new Pager(pager.getLimit()));
+        return new Page(customers, Pager.nextOf(pager));
     }
 }

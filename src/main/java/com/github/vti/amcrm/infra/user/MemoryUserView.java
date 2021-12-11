@@ -48,9 +48,12 @@ public class MemoryUserView implements UserView {
                         .collect(Collectors.toList());
 
         if (users.size() > 0) {
-            users = users.subList(0, Math.min(users.size(), pager.getLimit()));
+            users =
+                    users.subList(
+                            pager.getOffset(),
+                            Math.min(users.size(), pager.getOffset() + pager.getLimit()));
         }
 
-        return new Page(users, new Pager(pager.getLimit()));
+        return new Page(users, Pager.nextOf(pager));
     }
 }

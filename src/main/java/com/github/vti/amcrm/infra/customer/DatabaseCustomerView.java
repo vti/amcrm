@@ -93,9 +93,7 @@ public class DatabaseCustomerView implements CustomerView {
                 customers.add(customer);
             }
 
-            Pager newPager = new Pager(pager.getLimit(), pager.getOffset() + pager.getLimit());
-
-            return new Page(customers, newPager);
+            return new Page(customers, Pager.nextOf(pager));
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching", e);
         }

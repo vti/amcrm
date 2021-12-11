@@ -2,6 +2,7 @@ package com.github.vti.amcrm.functional.resource;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.Path;
@@ -111,7 +112,7 @@ public class UserResourceTest {
     }
 
     @Test
-    void listsUsersLimited() throws JsonProcessingException {
+    void listsUsersPaginated() throws JsonProcessingException {
         TestFunctional.createUser();
         TestFunctional.createUser();
         TestFunctional.createUser();
@@ -124,6 +125,7 @@ public class UserResourceTest {
                         .then()
                         .statusCode(200)
                         .assertThat()
+                        .header("Link", containsString("page=2"))
                         .body(
                                 matchesJsonSchemaInClasspath(
                                         TestFunctional.Model.USER_LIST.toString()))

@@ -15,10 +15,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.linecorp.armeria.common.HttpResponse;
+
+import com.github.vti.amcrm.Config;
 import com.github.vti.amcrm.TestData;
 import com.github.vti.amcrm.TestFactory;
 import com.github.vti.amcrm.TestFileUtils;
 import com.github.vti.amcrm.api.Client;
+import com.github.vti.amcrm.api.DefaultObjectMapper;
 import com.github.vti.amcrm.api.exception.ConflictException;
 import com.github.vti.amcrm.api.exception.NotFoundException;
 import com.github.vti.amcrm.api.service.request.CreateCustomerRequest;
@@ -48,7 +53,13 @@ public class CustomerServiceTest {
         ViewRegistry viewRegistry = new DatabaseViewRegistry(dataSource, baseUrl);
         PhotoStorage photoStorage = new LocalPhotoStorage(tmpDir, Paths.get("customer"));
 
-        service = Mockito.spy(new CustomerService(repositoryRegistry, viewRegistry, photoStorage));
+        service =
+                Mockito.spy(
+                        new CustomerService(
+                                Config.builder().build(),
+                                repositoryRegistry,
+                                viewRegistry,
+                                photoStorage));
 
         client = Client.user(TestData.getRandomId());
         Mockito.doReturn(client).when(service).getClient();
@@ -73,15 +84,18 @@ public class CustomerServiceTest {
     }
 
     @Test
-    void returnsEmptyList() {
-        List<CustomerSummary> customers =
-                service.getCustomerList(Optional.of(100), Optional.empty());
+    void returnsEmptyList() throws JsonProcessingException {
+        HttpResponse response = service.getCustomerList(Optional.of(100), Optional.empty());
+
+        String content = response.aggregate().join().contentUtf8();
+
+        List<CustomerSummary> customers = DefaultObjectMapper.get().readValue(content, List.class);
 
         assertEquals(0, customers.size());
     }
 
     @Test
-    void returnsList() {
+    void returnsList() throws JsonProcessingException {
         CreateCustomerRequest request1 = TestFactory.newCreateCustomerRequest();
         service.createCustomer(request1);
 
@@ -91,14 +105,17 @@ public class CustomerServiceTest {
         CreateCustomerRequest request3 = TestFactory.newCreateCustomerRequest();
         service.createCustomer(request3);
 
-        List<CustomerSummary> customers =
-                service.getCustomerList(Optional.of(100), Optional.empty());
+        HttpResponse response = service.getCustomerList(Optional.of(100), Optional.empty());
+
+        String content = response.aggregate().join().contentUtf8();
+
+        List<CustomerSummary> customers = DefaultObjectMapper.get().readValue(content, List.class);
 
         assertEquals(3, customers.size());
     }
 
     @Test
-    void returnsListLimited() {
+    void returnsListLimited() throws JsonProcessingException {
         CreateCustomerRequest request1 = TestFactory.newCreateCustomerRequest();
         service.createCustomer(request1);
 
@@ -108,9 +125,41 @@ public class CustomerServiceTest {
         CreateCustomerRequest request3 = TestFactory.newCreateCustomerRequest();
         service.createCustomer(request3);
 
-        List<CustomerSummary> customers = service.getCustomerList(Optional.of(2), Optional.empty());
+        HttpResponse response = service.getCustomerList(Optional.of(2), Optional.empty());
+
+        String content = response.aggregate().join().contentUtf8();
+
+        List<CustomerSummary> customers = DefaultObjectMapper.get().readValue(content, List.class);
 
         assertEquals(2, customers.size());
+    }
+
+    @Test
+    void returnsListPaginated() throws JsonProcessingException {
+        CreateCustomerRequest request1 = TestFactory.newCreateCustomerRequest();
+        service.createCustomer(request1);
+
+        CreateCustomerRequest request2 = TestFactory.newCreateCustomerRequest();
+        service.createCustomer(request2);
+
+        CreateCustomerRequest request3 = TestFactory.newCreateCustomerRequest();
+        service.createCustomer(request3);
+
+        HttpResponse response1 = service.getCustomerList(Optional.of(2), Optional.empty());
+
+        String content1 = response1.aggregate().join().contentUtf8();
+
+        List<CustomerSummary> page1 = DefaultObjectMapper.get().readValue(content1, List.class);
+
+        assertEquals(2, page1.size());
+
+        HttpResponse response2 = service.getCustomerList(Optional.of(2), Optional.of(2));
+
+        String content2 = response2.aggregate().join().contentUtf8();
+
+        List<CustomerSummary> page2 = DefaultObjectMapper.get().readValue(content2, List.class);
+
+        assertEquals(1, page2.size());
     }
 
     @Test

@@ -18,4 +18,9 @@ public class Page<T> {
     public Pager getPager() {
         return pager;
     }
+
+    @Override
+    public String toString() {
+        return "Page{" + "items=" + items + ", pager=" + pager + '}';
+    }
 }
