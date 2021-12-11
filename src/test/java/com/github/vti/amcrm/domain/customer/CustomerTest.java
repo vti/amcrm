@@ -18,7 +18,7 @@ public class CustomerTest {
         assertEquals("John", customer.getName());
 
         assertEquals(1, customer.getEvents().size());
-        assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
+        assertEquals(customer.getId().value(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getCreatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(CustomerCreated.class.getSimpleName(), customer.getEvents().get(0).getName());
     }
@@ -36,7 +36,7 @@ public class CustomerTest {
         assertEquals(actorId, customer.getUpdatedBy());
 
         assertEquals(1, customer.getEvents().size());
-        assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
+        assertEquals(customer.getId().value(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(
                 CustomerNameChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
@@ -55,7 +55,7 @@ public class CustomerTest {
         assertEquals(actorId, customer.getUpdatedBy());
 
         assertEquals(1, customer.getEvents().size());
-        assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
+        assertEquals(customer.getId().value(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(
                 CustomerSurnameChanged.class.getSimpleName(),
@@ -75,7 +75,7 @@ public class CustomerTest {
         assertEquals(actorId, customer.getUpdatedBy());
 
         assertEquals(1, customer.getEvents().size());
-        assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
+        assertEquals(customer.getId().value(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getUpdatedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(
                 CustomerPhotoChanged.class.getSimpleName(), customer.getEvents().get(0).getName());
@@ -94,7 +94,7 @@ public class CustomerTest {
         assertEquals(actorId, customer.getDeletedBy());
 
         assertEquals(1, customer.getEvents().size());
-        assertEquals(customer.getId(), customer.getEvents().get(0).getOriginId());
+        assertEquals(customer.getId().value(), customer.getEvents().get(0).getOriginId());
         assertEquals(customer.getDeletedBy(), customer.getEvents().get(0).getActorId());
         assertEquals(CustomerDeleted.class.getSimpleName(), customer.getEvents().get(0).getName());
     }

@@ -7,8 +7,6 @@ import static com.github.vti.amcrm.infra.DatabaseUtils.toLocalDateTime;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,15 +19,12 @@ import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import com.github.vti.amcrm.api.DefaultObjectMapper;
 import com.github.vti.amcrm.domain.ActorId;
-import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.user.User;
 import com.github.vti.amcrm.domain.user.UserId;
 import com.github.vti.amcrm.domain.user.UserRepository;
 import com.github.vti.amcrm.domain.user.exception.UserExistsException;
+import com.github.vti.amcrm.infra.DatabaseUtils;
 import com.github.vti.amcrm.infra.OptimisticLockException;
 
 public class DatabaseUserRepository implements UserRepository {
@@ -225,7 +220,7 @@ public class DatabaseUserRepository implements UserRepository {
                 }
             }
 
-            storeEvents(connection, user.getEvents());
+            DatabaseUtils.storeEvents(connection, user.getEvents());
 
             connection.commit();
 
@@ -250,40 +245,6 @@ public class DatabaseUserRepository implements UserRepository {
             return false;
         } catch (SQLException e) {
             throw new RuntimeException("Empty check failed", e);
-        }
-    }
-
-    private void storeEvents(Connection connection, List<Event<UserId>> events) {
-        DSLContext create = DSL.using(connection, SQLDialect.SQLITE);
-
-        for (Event<UserId> event : events) {
-            create.insertInto(
-                            EVENT,
-                            EVENT.CREATED_AT,
-                            EVENT.NAME,
-                            EVENT.ORIGIN_ID,
-                            EVENT.USER_ID,
-                            EVENT.PAYLOAD)
-                    .values(
-                            toLocalDateTime(event.getCreatedAt()),
-                            event.getName(),
-                            event.getOriginId().value(),
-                            event.getActorId().value(),
-                            event.getPayload()
-                                    .map(
-                                            p -> {
-                                                try {
-                                                    return Arrays.toString(
-                                                            DefaultObjectMapper.get()
-                                                                    .writeValueAsBytes(p));
-                                                } catch (JsonProcessingException e) {
-                                                    throw new RuntimeException(
-                                                            "Event payload serialization failed",
-                                                            e);
-                                                }
-                                            })
-                                    .orElse(null))
-                    .execute();
         }
     }
 }

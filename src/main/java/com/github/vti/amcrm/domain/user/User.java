@@ -8,7 +8,7 @@ import com.github.vti.amcrm.domain.Entity;
 import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.user.event.*;
 
-public class User extends Entity<Event<UserId>> {
+public class User extends Entity<Event> {
     private final UserId id;
     private Long version;
     private final String name;

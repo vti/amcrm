@@ -18,7 +18,7 @@ public class UserTest {
         assertEquals("John", user.getName());
 
         assertEquals(1, user.getEvents().size());
-        assertEquals(user.getId(), user.getEvents().get(0).getOriginId());
+        assertEquals(user.getId().value(), user.getEvents().get(0).getOriginId());
         assertEquals(user.getCreatedBy(), user.getEvents().get(0).getActorId());
         assertEquals(UserCreated.class.getSimpleName(), user.getEvents().get(0).getName());
     }
@@ -45,7 +45,7 @@ public class UserTest {
         assertEquals(actorId, user.getUpdatedBy());
 
         assertEquals(1, user.getEvents().size());
-        assertEquals(user.getId(), user.getEvents().get(0).getOriginId());
+        assertEquals(user.getId().value(), user.getEvents().get(0).getOriginId());
         assertEquals(user.getUpdatedBy(), user.getEvents().get(0).getActorId());
         assertEquals(
                 UserAdminStatusToggled.class.getSimpleName(), user.getEvents().get(0).getName());
@@ -64,7 +64,7 @@ public class UserTest {
         assertEquals(actorId, user.getDeletedBy());
 
         assertEquals(1, user.getEvents().size());
-        assertEquals(user.getId(), user.getEvents().get(0).getOriginId());
+        assertEquals(user.getId().value(), user.getEvents().get(0).getOriginId());
         assertEquals(user.getDeletedBy(), user.getEvents().get(0).getActorId());
         assertEquals(UserDeleted.class.getSimpleName(), user.getEvents().get(0).getName());
     }

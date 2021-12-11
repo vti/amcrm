@@ -9,7 +9,7 @@ import com.github.vti.amcrm.domain.Entity;
 import com.github.vti.amcrm.domain.Event;
 import com.github.vti.amcrm.domain.customer.event.*;
 
-public class Customer extends Entity<Event<CustomerId>> {
+public class Customer extends Entity<Event> {
     private final CustomerId id;
     private Long version;
     private String name;

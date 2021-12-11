@@ -3,19 +3,19 @@ package com.github.vti.amcrm.domain;
 import java.time.Instant;
 import java.util.Optional;
 
-public class Event<T> {
+public class Event {
     private final Instant createdAt = Instant.now();
-    private final T originId;
+    private final String originId;
     private final ActorId actorId;
     private final Object payload;
 
-    protected Event(T originId, ActorId actorId, Object payload) {
+    protected Event(String originId, ActorId actorId, Object payload) {
         this.originId = originId;
         this.actorId = actorId;
         this.payload = payload;
     }
 
-    protected Event(T originId, ActorId actorId) {
+    protected Event(String originId, ActorId actorId) {
         this(originId, actorId, null);
     }
 
@@ -27,7 +27,7 @@ public class Event<T> {
         return getClass().getSimpleName();
     }
 
-    public T getOriginId() {
+    public String getOriginId() {
         return originId;
     }
 
