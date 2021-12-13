@@ -6,6 +6,7 @@ public class CustomerSummary {
     private final String name;
     private final String surname;
     private final String photoLocation;
+    private final String createdBy;
 
     public CustomerSummary(Builder builder) {
         this.baseUrl = builder.baseUrl;
@@ -13,6 +14,7 @@ public class CustomerSummary {
         this.name = builder.name;
         this.surname = builder.surname;
         this.photoLocation = builder.photoLocation;
+        this.createdBy = builder.createdBy;
     }
 
     public static Builder builder() {
@@ -40,6 +42,10 @@ public class CustomerSummary {
         return photoLocation;
     }
 
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
     public static class Builder {
 
         private String id;
@@ -47,6 +53,7 @@ public class CustomerSummary {
         private String surname;
         private String photoLocation;
         private String baseUrl;
+        private String createdBy;
 
         public Builder baseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
@@ -70,6 +77,11 @@ public class CustomerSummary {
 
         public Builder photoLocation(String photoLocation) {
             this.photoLocation = photoLocation;
+            return this;
+        }
+
+        public Builder createdBy(String createdBy) {
+            this.createdBy = createdBy;
             return this;
         }
 

@@ -73,6 +73,19 @@ public class CustomerResourceTest {
     }
 
     @Test
+    void getsCustomerDetailsAsAdmin() throws JsonProcessingException {
+        String customerId = TestFunctional.createCustomer();
+
+        given().headers(TestFunctional.getAuthenticatedAdminHeaders())
+                .when()
+                .get(TestFunctional.buildPath(Api.Resource.CUSTOMERS, customerId))
+                .then()
+                .statusCode(200)
+                .assertThat()
+                .body(matchesJsonSchemaInClasspath(TestFunctional.Model.ADMIN_CUSTOMER.toString()));
+    }
+
+    @Test
     void patchesCustomer() throws JsonProcessingException {
         String customerId = TestFunctional.createCustomer();
 
@@ -111,6 +124,23 @@ public class CustomerResourceTest {
                 .statusCode(200)
                 .assertThat()
                 .body(matchesJsonSchemaInClasspath(TestFunctional.Model.CUSTOMER_LIST.toString()));
+    }
+
+    @Test
+    void listsCustomersAsAdmin() throws JsonProcessingException {
+        TestFunctional.createCustomer();
+        TestFunctional.createCustomer();
+        TestFunctional.createCustomer();
+
+        given().headers(TestFunctional.getAuthenticatedAdminHeaders())
+                .when()
+                .get(Api.Resource.CUSTOMERS.toString())
+                .then()
+                .statusCode(200)
+                .assertThat()
+                .body(
+                        matchesJsonSchemaInClasspath(
+                                TestFunctional.Model.ADMIN_CUSTOMER_LIST.toString()));
     }
 
     @Test

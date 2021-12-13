@@ -138,7 +138,9 @@ public class TestFunctional {
 
     public enum Model {
         CUSTOMER("schema/api/model/customer.json"),
+        ADMIN_CUSTOMER("schema/api/model/admin-customer.json"),
         CUSTOMER_LIST("schema/api/model/customer-list.json"),
+        ADMIN_CUSTOMER_LIST("schema/api/model/admin-customer-list.json"),
         USER("schema/api/model/user.json"),
         USER_LIST("schema/api/model/user-list.json"),
         VALIDATION_ERROR("schema/api/model/validation-error.json");

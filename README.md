@@ -157,6 +157,8 @@ HTTP/1.1 OK
 }
 ```
 
+When calling this resource as admin additional information is provided, for example `createdBy`.
+
 *GetCustomerDetails*
 
 ```http
@@ -173,6 +175,8 @@ HTTP/1.1 OK
   "photoLocation": "{baseUrl}/customer/ee14bd14-74e2-4e19-8901-cba94525f8a9-32x32.jpg"
 }
 ```
+
+When calling this resource as admin additional information is provided, for example `createdBy`.
 
 *PatchCustomer*
 

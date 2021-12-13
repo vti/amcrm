@@ -59,7 +59,10 @@ public class CustomerService extends BaseService {
             @Param("limit") Optional<Integer> limit, @Param("page") Optional<Integer> pageNum) {
         Pager pager = new Pager(limit, pageNum);
 
-        Page<CustomerSummary> page = viewRegistry.getCustomerView().find(pager);
+        Page<CustomerSummary> page =
+                getClient().isUser()
+                        ? viewRegistry.getCustomerView().find(pager)
+                        : viewRegistry.getCustomerView().findForAdmin(pager);
 
         String linkHeader = new LinkHeader(config.getBaseUrl().toString(), pager).toString();
 
@@ -69,7 +72,7 @@ public class CustomerService extends BaseService {
 
     @Get("/{id}")
     public CustomerSummary getCustomerSummary(@Param("id") String id) {
-        Optional<CustomerSummary> customer = viewRegistry.getCustomerView().load(id);
+        Optional<CustomerSummary> customer = loadForClient(id);
 
         return customer.orElseThrow(NotFoundException::new);
     }
@@ -91,10 +94,7 @@ public class CustomerService extends BaseService {
         try {
             createCustomerCommand.execute();
 
-            return viewRegistry
-                    .getCustomerView()
-                    .load(request.getId())
-                    .orElseThrow(RuntimeException::new);
+            return loadForClient(request.getId()).orElseThrow(RuntimeException::new);
         } catch (CustomerExistsException e) {
             throw new ConflictException("Customer already exists");
         }
@@ -118,7 +118,7 @@ public class CustomerService extends BaseService {
         try {
             patchCustomerCommand.execute();
 
-            return viewRegistry.getCustomerView().load(id).orElseThrow(RuntimeException::new);
+            return loadForClient(id).orElseThrow(RuntimeException::new);
         } catch (CustomerNotFoundException e) {
             throw new NotFoundException();
         }
@@ -142,6 +142,12 @@ public class CustomerService extends BaseService {
         } catch (CustomerNotFoundException e) {
             throw new NotFoundException();
         }
+    }
+
+    private Optional<CustomerSummary> loadForClient(String id) {
+        return getClient().isUser()
+                ? viewRegistry.getCustomerView().load(id)
+                : viewRegistry.getCustomerView().loadForAdmin(id);
     }
 
     private String processPhoto(String data) {

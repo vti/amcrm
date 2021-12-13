@@ -37,6 +37,25 @@ public class MemoryCustomerView implements CustomerView {
     }
 
     @Override
+    public Optional<CustomerSummary> loadForAdmin(String id) {
+        Customer customer = storage.get(CustomerId.of(id));
+
+        if (customer == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+                CustomerSummary.builder()
+                        .baseUrl(baseUrl)
+                        .id(customer.getId().value())
+                        .name(customer.getName())
+                        .surname(customer.getSurname())
+                        .photoLocation(customer.getPhotoLocation().orElse(null))
+                        .createdBy(customer.getCreatedBy().value())
+                        .build());
+    }
+
+    @Override
     public Page<CustomerSummary> find(Pager pager) {
         List<CustomerSummary> customers =
                 storage.values().stream()
@@ -52,6 +71,30 @@ public class MemoryCustomerView implements CustomerView {
                                                 .build())
                         .collect(Collectors.toList());
 
+        return sliceForPager(customers, pager);
+    }
+
+    @Override
+    public Page<CustomerSummary> findForAdmin(Pager pager) {
+        List<CustomerSummary> customers =
+                storage.values().stream()
+                        .map(
+                                customer ->
+                                        CustomerSummary.builder()
+                                                .baseUrl(baseUrl)
+                                                .id(customer.getId().value())
+                                                .name(customer.getName())
+                                                .surname(customer.getSurname())
+                                                .photoLocation(
+                                                        customer.getPhotoLocation().orElse(null))
+                                                .createdBy(customer.getCreatedBy().value())
+                                                .build())
+                        .collect(Collectors.toList());
+
+        return sliceForPager(customers, pager);
+    }
+
+    private Page<CustomerSummary> sliceForPager(List<CustomerSummary> customers, Pager pager) {
         if (customers.size() > 0) {
             customers =
                     customers.subList(
