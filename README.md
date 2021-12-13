@@ -104,7 +104,7 @@ GET /customers?limit=100&page=2
 
 ```http
 HTTP/1.1 200 OK
-Link: <http://localhost:4567?limit=100&page=1>; rel="prev", <http://localhost:4567?limit=100&page=3>; rel="next"
+Link: <{baseUrl}?limit=100&page=1>; rel="prev", <{baseUrl}?limit=100&page=3>; rel="next"
 
 ```
 
@@ -118,10 +118,43 @@ Link: <http://localhost:4567?limit=100&page=1>; rel="prev", <http://localhost:45
 GET /customers
 ```
 
+```
+HTTP/1.1 200 OK
+Link: <{baseUrl}?limit={limit}&page={page}>; rel="next"
+
+[
+  {
+    "id": "2",
+    "name": "Bill",
+    "surname": "Smith",
+    "photoLocation": null
+  },
+  ...
+]
+```
+
 *CreateCustomer*
 
 ```http
 POST /customers
+
+{
+  "id": "2",
+  "name": "Bill",
+  "surname": "Smith",
+  "photo": "...base64 blob..."
+}
+```
+
+```http
+HTTP/1.1 OK
+
+{
+  "id": "2",
+  "name": "Bill",
+  "surname": "Smith",
+  "photoLocation": "{baseUrl}/customer/ee14bd14-74e2-4e19-8901-cba94525f8a9-32x32.jpg"
+}
 ```
 
 *GetCustomerDetails*
@@ -130,10 +163,25 @@ POST /customers
 GET /customers/{customerId}
 ```
 
+```http
+HTTP/1.1 OK
+
+{
+  "id": "2",
+  "name": "Bill",
+  "surname": "Smith",
+  "photoLocation": "{baseUrl}/customer/ee14bd14-74e2-4e19-8901-cba94525f8a9-32x32.jpg"
+}
+```
+
 *PatchCustomer*
 
 ```http
 PATCH /customers/{customerId}
+
+{
+  "name": "Bill"
+}
 ```
 
 *DeleteCustomer*
