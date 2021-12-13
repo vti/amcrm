@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.linecorp.armeria.common.JacksonObjectMapperProvider;
 
-public class DefaultObjectMapper {
+public class DefaultObjectMapper implements JacksonObjectMapperProvider {
     private static final ObjectMapper objectMapper = buildObjectMapper();
 
     public static ObjectMapper get() {
@@ -15,10 +16,14 @@ public class DefaultObjectMapper {
     private static ObjectMapper buildObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        objectMapper.registerModule(new Jdk8Module().configureAbsentsAsNulls(true));
+        objectMapper.registerModule(new Jdk8Module());
         objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
         return objectMapper;
+    }
+
+    public ObjectMapper newObjectMapper() {
+        return buildObjectMapper();
     }
 }
