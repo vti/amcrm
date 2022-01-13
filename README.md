@@ -1,5 +1,7 @@
 # AMCRM
 
+This is a *Demo* project implementing various DDD patterns.
+
 AMCRM is a backend implementation for customer management. It has a public REST api that is documented below.
 
 ## REST API
